@@ -105,7 +105,8 @@ async def analyze_with_fallback(
     system = "你是一个专业的用户画像分析助手。只输出 JSON，不要输出其他内容。"
 
     # 如果没配任何 API Key，返回空结果
-    if not settings.qwen_api_key and not settings.glm_api_key:
+    has_any_key = settings.qwen_api_key or settings.deepseek_api_key or settings.glm_api_key
+    if not has_any_key:
         logger.warning("analyze: 未配置任何 LLM API Key，返回空结果")
         return {"tags": {c: [] for c in ["personality","hobby","lifestyle","roommate_expectation","rental_preference","listing_feature","transfer_reason"]}, "questions": []}
 
@@ -118,7 +119,18 @@ async def analyze_with_fallback(
             logger.info("analyze: Qwen-Plus ✓")
             return result
         except Exception as e:
-            logger.warning(f"analyze: Qwen-Plus 失败 ({e}), 降级 GLM-4-Air")
+            logger.warning(f"analyze: Qwen-Plus 失败 ({e}), 降级 DeepSeek-V3")
+
+    # Try DeepSeek-V3（当没有 Qwen 或 Qwen 失败时）
+    if settings.deepseek_api_key:
+        try:
+            raw = await llm_client.call_deepseek_v3(system, prompt)
+            result = _parse_json_response(raw)
+            validate(instance=result, schema=ANALYZE_SCHEMA)
+            logger.info("analyze: DeepSeek-V3 ✓")
+            return result
+        except Exception as e:
+            logger.warning(f"analyze: DeepSeek-V3 失败 ({e}), 降级 GLM-4-Air")
 
     # Try GLM-4-Air (secondary)
     if settings.glm_api_key:
@@ -160,7 +172,8 @@ async def generate_bio_with_fallback(
     })
     system = "你是一个文字编辑。只输出 JSON，不要输出其他内容。"
 
-    if not settings.deepseek_api_key and not settings.qwen_api_key and not settings.glm_api_key:
+    has_any_bio_key = settings.deepseek_api_key or settings.qwen_api_key or settings.glm_api_key
+    if not has_any_bio_key:
         logger.warning("bio: 未配置任何 LLM API Key")
         return {"bio": free_text[:200] if free_text else "这个人还没写自我介绍"}
 
