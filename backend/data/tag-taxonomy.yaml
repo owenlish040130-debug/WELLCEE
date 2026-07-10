@@ -1,0 +1,183 @@
+version: "1.0"
+categories:
+  personality:
+    label: "性格标签"
+    icon: "🧠"
+    description: "描述性格和社交倾向"
+    tags:
+      - id: personality-quiet
+        label: "安静型"
+        keywords: ["安静", "话少", "内向", "独处", "喜静", "不太说话", "比较宅"]
+        roommate_relevance: high
+      - id: personality-outgoing
+        label: "外向型"
+        keywords: ["外向", "开朗", "社交", "话多", "喜欢交朋友", "自来熟"]
+        roommate_relevance: high
+      - id: personality-balanced
+        label: "中间型"
+        keywords: ["亦动亦静", "看情况", "分人", "慢热"]
+        roommate_relevance: high
+
+  hobby:
+    label: "爱好标签"
+    icon: "🎯"
+    description: "兴趣爱好"
+    tags:
+      - id: hobby-running
+        label: "跑步"
+        keywords: ["跑步", "慢跑", "夜跑", "晨跑", "马拉松"]
+        roommate_relevance: medium
+      - id: hobby-fitness
+        label: "健身"
+        keywords: ["健身", "撸铁", "健身房", "力量训练", "举铁"]
+        roommate_relevance: medium
+      - id: hobby-cooking
+        label: "烹饪"
+        keywords: ["做饭", "烹饪", "下厨", "烘焙", "做菜", "煮饭"]
+        roommate_relevance: high
+      - id: hobby-reading
+        label: "阅读"
+        keywords: ["看书", "阅读", "读书", "纸质书"]
+        roommate_relevance: low
+      - id: hobby-movies
+        label: "看电影"
+        keywords: ["电影", "看片", "追剧", "刷剧", "美剧", "日剧", "韩剧", "纪录片"]
+        roommate_relevance: low
+      - id: hobby-music
+        label: "音乐"
+        keywords: ["音乐", "听歌", "弹琴", "吉他", "钢琴", "唱歌"]
+        roommate_relevance: medium
+      - id: hobby-gaming
+        label: "游戏"
+        keywords: ["游戏", "打游戏", "电竞", "主机", "PS5", "Switch", "手游"]
+        roommate_relevance: medium
+      - id: hobby-travel
+        label: "旅行"
+        keywords: ["旅行", "旅游", "出去玩", "徒步", "爬山", "户外", "露营"]
+        roommate_relevance: low
+      - id: hobby-photography
+        label: "摄影"
+        keywords: ["摄影", "拍照", "相机", "胶片"]
+        roommate_relevance: low
+
+  lifestyle:
+    label: "生活习惯"
+    icon: "🏠"
+    description: "日常生活习惯和偏好"
+    tags:
+      - id: lifestyle-early-sleeper
+        label: "早睡型"
+        keywords: ["早睡", "十点睡", "早睡早起"]
+        roommate_relevance: high
+      - id: lifestyle-normal-sleeper
+        label: "正常作息"
+        keywords: ["正常作息", "作息规律", "规律作息"]
+        roommate_relevance: high
+      - id: lifestyle-night-owl
+        label: "晚睡型"
+        keywords: ["晚睡", "夜猫子", "熬夜", "睡得晚"]
+        roommate_relevance: high
+      - id: lifestyle-non-smoker
+        label: "不吸烟"
+        keywords: ["不吸烟", "不抽烟", "禁烟", "无烟", "讨厌烟味"]
+        roommate_relevance: high
+      - id: lifestyle-smoker
+        label: "吸烟"
+        keywords: ["吸烟", "抽烟", "烟民"]
+        roommate_relevance: high
+      - id: lifestyle-pet-owner
+        label: "养宠物"
+        keywords: ["养猫", "养狗", "宠物", "猫咪", "狗子", "猫", "狗"]
+        roommate_relevance: high
+      - id: lifestyle-no-pet
+        label: "不养宠物"
+        keywords: ["不养宠物", "没宠物"]
+        roommate_relevance: high
+      - id: lifestyle-homebody
+        label: "宅家型"
+        keywords: ["宅", "宅家", "不出门", "在家待着", "宅男", "宅女"]
+        roommate_relevance: medium
+
+  roommate_expectation:
+    label: "室友期望"
+    icon: "🤝"
+    description: "对理想室友的期望"
+    tags:
+      - id: roommate-quiet-env
+        label: "安静环境"
+        keywords: ["安静", "不要太吵", "想安静", "喜静"]
+        roommate_relevance: high
+      - id: roommate-clean-high
+        label: "高清洁标准"
+        keywords: ["干净", "整洁", "洁癖", "一尘不染", "定期打扫"]
+        roommate_relevance: high
+      - id: roommate-clean-medium
+        label: "中等清洁标准"
+        keywords: ["基本整洁", "不太脏就行"]
+        roommate_relevance: high
+      - id: roommate-non-smoker
+        label: "不吸烟室友"
+        keywords: ["室友不吸烟", "不抽烟的室友"]
+        roommate_relevance: high
+      - id: roommate-pet-friendly
+        label: "接受宠物"
+        keywords: ["接受宠物", "喜欢宠物", "宠物友好", "可以养猫", "可以养狗"]
+        roommate_relevance: high
+      - id: roommate-cook-together
+        label: "可以一起做饭"
+        keywords: ["一起做饭", "一起下厨", "搭伙", "一起吃饭"]
+        roommate_relevance: medium
+      - id: roommate-few-visitors
+        label: "少访客"
+        keywords: ["不带人", "少带人", "不喜欢访客", "不带朋友回来"]
+        roommate_relevance: high
+
+  rental_preference:
+    label: "求租偏好"
+    icon: "🔍"
+    description: "租房偏好"
+    tags:
+      - id: rental-budget-low
+        label: "预算3000以内"
+        keywords: ["3000以内", "预算3000", "便宜", "两千多"]
+        roommate_relevance: low
+      - id: rental-budget-mid
+        label: "预算3000-5000"
+        keywords: ["4000左右", "4500", "三千到五千", "三千五"]
+        roommate_relevance: low
+      - id: rental-budget-high
+        label: "预算5000以上"
+        keywords: ["5000以上", "预算充足", "6000", "8000"]
+        roommate_relevance: low
+      - id: rental-metro
+        label: "近地铁"
+        keywords: ["地铁", "交通方便", "地铁口", "近地铁", "步行到地铁"]
+        roommate_relevance: low
+      - id: rental-pet-friendly
+        label: "宠物友好房源"
+        keywords: ["宠物友好", "可以养宠物", "能养猫", "能养狗"]
+        roommate_relevance: high
+
+  listing_feature:
+    label: "房源特征"
+    icon: "🏡"
+    description: "出租/转租房源特征"
+    tags:
+      - id: listing-renovated
+        label: "精装修"
+        keywords: ["精装", "精装修", "装修好", "新房", "新装修"]
+        roommate_relevance: low
+      - id: listing-sunny
+        label: "采光好"
+        keywords: ["采光好", "阳光", "朝南", "明亮", "光线好"]
+        roommate_relevance: low
+      - id: listing-metro
+        label: "近地铁"
+        keywords: ["地铁", "近地铁", "地铁口", "交通方便"]
+        roommate_relevance: low
+
+mutual_exclusion_rules:
+  - group: ["lifestyle-smoker", "lifestyle-non-smoker"]
+    rule: "取 confidence 高者"
+  - group: ["lifestyle-early-sleeper", "lifestyle-night-owl"]
+    rule: "取 confidence 高者"

@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellcee 个人资料 AI 增强 — MVP Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f8f7;
+  --card-bg: #ffffff;
+  --text: #121c1a;
+  --text-secondary: #5a6e6a;
+  --text-muted: #8fa09b;
+  --primary: #00B8BC;
+  --primary-light: #e6f7f7;
+  --primary-dark: #008085;
+  --primary-glow: rgba(0,184,188,0.18);
+  --accent-green: #2e8c70;
+  --accent-green-light: #eaf7f2;
+  --accent-blue: #3a7d8c;
+  --accent-blue-light: #eaf4f7;
+  --border: #e4ece9;
+  --border-active: #bcd4cd;
+  --phone-bg: #fafbfa;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 48px;
+  --font-display: 'Noto Serif SC', serif;
+  --font-body: 'Noto Sans SC', sans-serif;
+  --transition: 0.28s cubic-bezier(0.4, 0.0, 0.2, 1);
+  --transition-spring: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse at 10% 10%, rgba(0,184,188,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 80%, rgba(46,140,112,0.03) 0%, transparent 55%);
+}
+
+/* ─── Header ─── */
+.header {
+  text-align: center;
+  padding: 56px 24px 36px;
+}
+.header .logo {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.header .logo span { color: var(--primary); }
+.header .subtitle {
+  margin-top: 6px;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Main Layout ─── */
+.main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 28px 100px;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 56px;
+  align-items: start;
+}
+
+/* ─── Product Explanation Panel ─── */
+.explanation-panel {
+  position: sticky;
+  top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.explanation-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 30px;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition);
+}
+.explanation-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+.explanation-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.explanation-card h3 .icon {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem;
+}
+.icon-design { background: var(--primary-light); }
+.icon-ai { background: var(--accent-blue-light); }
+.icon-data { background: var(--accent-green-light); }
+.explanation-card p {
+  color: var(--text-secondary);
+  font-size: 0.89rem;
+  line-height: 1.75;
+}
+.explanation-card .highlight {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  padding: 1px 9px;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  margin: 0 2px;
+}
+.explanation-card ul {
+  list-style: none;
+  padding: 0;
+}
+.explanation-card ul li {
+  position: relative;
+  padding-left: 20px;
+  margin: 7px 0;
+  color: var(--text-secondary);
+  font-size: 0.87rem;
+  line-height: 1.6;
+}
+.explanation-card ul li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 9px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.45;
+}
+.data-flow-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.data-flow-item {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 15px;
+  text-align: center;
+  border: 1px solid transparent;
+  transition: border-color var(--transition);
+}
+.data-flow-item:hover { border-color: var(--border); }
+.data-flow-item .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.data-flow-item .value {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+.architecture-diagram {
+  margin-top: 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.76rem;
+  line-height: 2;
+  color: var(--text-secondary);
+  overflow-x: auto;
+  border: 1px solid var(--border);
+}
+.arch-layer { color: var(--primary-dark); font-weight: 600; }
+.arch-arrow { color: var(--text-muted); }
+
+/* ─── Phone Mockup ─── */
+.phone-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.phone-frame {
+  width: 390px;
+  height: 780px;
+  background: var(--phone-bg);
+  border-radius: 48px;
+  border: 2.5px solid #dce6e2;
+  box-shadow:
+    0 0 0 6px #ecefe9,
+    0 0 0 8px #dfe4e0,
+    var(--shadow-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.phone-notch {
+  width: 126px; height: 30px;
+  background: #121c1a;
+  border-radius: 0 0 20px 20px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* Phone Header */
+.phone-header {
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.phone-header .title {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.phone-header .step-indicator {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Phone Content */
+.phone-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 24px 32px;
+  scroll-behavior: smooth;
+}
+.phone-content::-webkit-scrollbar { width: 3px; }
+.phone-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Progress Bar */
+.progress-bar-wrap { margin-bottom: 24px; }
+.progress-bar-outer {
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-bar-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #00d4d8);
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(0,184,188,0.25);
+}
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.7rem; color: var(--text-muted);
+  margin-top: 6px; font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Step Section Headers ─── */
+.step-intro {
+  margin-bottom: 22px;
+}
+.step-intro .step-intro-icon {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  display: block;
+}
+.step-intro .step-intro-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.step-intro .step-intro-desc {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ─── Form Elements ─── */
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--card-bg);
+  transition: all var(--transition);
+  outline: none;
+}
+.form-input::placeholder, .form-textarea::placeholder { color: #bcc9c5; }
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-light);
+}
+.form-textarea {
+  resize: none;
+  min-height: 130px;
+  line-height: 1.7;
+  font-size: 0.88rem;
+}
+.form-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ─── Combobox ─── */
+.combobox-wrap { position: relative; }
+.combobox-wrap .form-input { padding-right: 36px; }
+.combobox-arrow {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 0.65rem; color: var(--text-muted);
+  transition: transform var(--transition);
+}
+.combobox-wrap.open .combobox-arrow { transform: translateY(-50%) rotate(180deg); }
+.combobox-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  max-height: 180px; overflow-y: auto;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  display: none;
+}
+.combobox-wrap.open .combobox-dropdown { display: block; }
+.combobox-option {
+  padding: 10px 14px; font-size: 0.84rem; color: var(--text);
+  cursor: pointer; transition: background var(--transition);
+  display: flex; align-items: center; gap: 8px;
+}
+.combobox-option:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.combobox-option:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+.combobox-option:hover { background: var(--primary-light); color: var(--primary-dark); }
+.combobox-option.highlight { background: var(--primary-light); color: var(--primary-dark); font-weight: 600; }
+.combobox-option .opt-match { color: var(--primary); font-weight: 600; }
+.combobox-option.no-match {
+  color: var(--text-muted); font-style: italic; cursor: default;
+}
+.combobox-option.no-match:hover { background: transparent; color: var(--text-muted); }
+/* Language multi-value */
+.combobox-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 8px;
+}
+.combobox-chip {
+  padding: 5px 10px; border-radius: 14px;
+  background: var(--primary-light); color: var(--primary-dark);
+  font-size: 0.76rem; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid transparent;
+}
+.combobox-chip .chip-x {
+  cursor: pointer; font-size: 0.8rem; opacity: 0.5;
+  background: none; border: none; color: inherit;
+  font-family: var(--font-body); line-height: 1;
+}
+.combobox-chip .chip-x:hover { opacity: 1; }
+
+/* Avatar placeholder */
+.avatar-placeholder {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-light), #d5f0f0);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  cursor: pointer;
+  border: 2px dashed var(--primary);
+  transition: all var(--transition);
+}
+.avatar-placeholder:hover { border-style: solid; background: var(--primary-light); }
+
+/* ─── Photo Upload Grid ─── */
+.photo-upload-section {
+  margin-bottom: 22px;
+}
+.photo-upload-label {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.photo-upload-label span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+.photo-upload-label .photo-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.photo-slot {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+  font-size: 1.6rem;
+  color: var(--text-muted);
+}
+.photo-slot:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.photo-slot.filled {
+  border-style: solid;
+  border-color: var(--border);
+  background-size: cover;
+  background-position: center;
+  cursor: grab;
+}
+.photo-slot.filled:active { cursor: grabbing; }
+.photo-slot.cover-badge::after {
+  content: '封面';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.55));
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 4px 0 6px;
+  letter-spacing: 0.04em;
+}
+.photo-slot .photo-remove {
+  position: absolute;
+  top: 5px; right: 5px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: none;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: 2;
+}
+.photo-slot.filled:hover .photo-remove { opacity: 1; }
+.photo-max-hint {
+  margin-top: 8px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+/* Drag state */
+.photo-slot.drag-over {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  transform: scale(1.04);
+  box-shadow: 0 4px 16px var(--primary-glow);
+}
+.photo-slot.dragging {
+  opacity: 0.4;
+  transform: scale(0.95);
+}
+
+/* ─── Demand Chips ─── */
+.demand-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.demand-chip {
+  padding: 9px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  font-family: var(--font-body);
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+.demand-chip:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+.demand-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,184,188,0.25);
+}
+
+/* ─── Buttons ─── */
+.btn {
+  padding: 13px 28px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.02em;
+}
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  width: 100%;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1.5px); box-shadow: 0 8px 20px var(--primary-glow); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--primary); background: var(--primary-light); }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  padding: 8px 14px;
+  font-weight: 500;
+}
+.btn-ghost:hover { color: var(--text-secondary); }
+
+/* ─── AI Thinking ─── */
+.ai-thinking-wrap {
+  text-align: center;
+  padding: 52px 24px;
+}
+.ai-thinking {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-bottom: 18px;
+}
+.ai-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: thinkPulse 1.5s ease-in-out infinite;
+}
+.ai-dot:nth-child(2) { animation-delay: 0.2s; }
+.ai-dot:nth-child(3) { animation-delay: 0.4s; }
+.ai-thinking-text {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.ai-thinking-sub {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ─── AI Question Bubbles ─── */
+.question-header {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 500;
+}
+.question-header .q-badge {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+.question-bubble {
+  background: #f9fdfd;
+  border: 1.5px solid #d4e8e6;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  animation: fadeInUp 0.4s ease;
+  box-shadow: var(--shadow-xs);
+  border-left: 3px solid var(--primary);
+}
+.question-bubble .q-text {
+  font-size: 0.89rem;
+  color: var(--text);
+  margin-bottom: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.question-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.option-chip {
+  padding: 9px 18px;
+  border: 1.5px solid #c4dcd8;
+  border-radius: 20px;
+  font-size: 0.81rem;
+  cursor: pointer;
+  background: #fff;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+.option-chip:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+.option-chip.selected { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
+.q-skip {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none; border: none;
+  font-family: var(--font-body);
+  font-weight: 500;
+  padding: 4px 0;
+  transition: color var(--transition);
+}
+.q-skip:hover { color: var(--text-secondary); }
+.skip-banner { display: flex; justify-content: center; padding: 10px 0 0; }
+.skip-banner button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+.skip-banner button:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+/* ─── Tag Section ─── */
+.tag-section { margin-bottom: 18px; }
+.tag-section h4 {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 7px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.tag-chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-chip {
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition);
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1.5px solid transparent;
+}
+.tag-confirmed, .tag-source-free {
+  background: var(--accent-green-light);
+  color: var(--accent-green);
+  border-color: #c4e0d6;
+}
+.tag-source-qa {
+  background: #eef6f8;
+  color: var(--accent-blue);
+  border-color: #c8dce3;
+}
+.tag-source-qa::after { content: '💬'; font-size: 0.62rem; opacity: 0.7; }
+.tag-chip .tag-remove {
+  margin-left: 2px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.4;
+  background: none; border: none;
+  color: inherit; font-family: var(--font-body);
+  transition: opacity var(--transition);
+}
+.tag-chip .tag-remove:hover { opacity: 0.8; }
+.tag-add {
+  padding: 8px 14px;
+  border: 1.5px dashed var(--border-active);
+  border-radius: 16px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-weight: 500;
+  transition: all var(--transition);
+}
+.tag-add:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.tag-total {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+.tag-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* ─── Bio Card ─── */
+.bio-card {
+  background: linear-gradient(160deg, #f9fcfa 0%, #f3faf9 100%);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 18px;
+  position: relative;
+  box-shadow: var(--shadow-xs);
+}
+.bio-card::before {
+  content: '\201C';
+  position: absolute;
+  top: -14px;
+  left: 20px;
+  font-size: 3.4rem;
+  font-family: var(--font-display);
+  color: var(--primary);
+  opacity: 0.18;
+  line-height: 1;
+}
+.bio-text {
+  font-size: 0.91rem;
+  line-height: 1.85;
+  color: var(--text);
+  text-indent: 1.2em;
+}
+
+/* ─── Success State ─── */
+.success-state {
+  text-align: center;
+  padding: 36px 16px 24px;
+}
+.success-icon {
+  font-size: 3.2rem;
+  margin-bottom: 14px;
+  animation: scaleIn 0.6s ease;
+  display: block;
+}
+.success-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.success-subtitle {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.summary-card {
+  text-align: left;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  margin-top: 20px;
+}
+.summary-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-row .s-label { color: var(--text-muted); font-weight: 500; }
+.summary-row .s-value { color: var(--text); font-weight: 600; }
+
+/* ─── Animations ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes thinkPulse {
+  0%, 60%, 100% { transform: scale(0.8); opacity: 0.4; }
+  30% { transform: scale(1.25); opacity: 1; }
+}
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.fade-in { animation: fadeInUp 0.45s ease; }
+
+/* ─── Hidden ─── */
+.hidden { display: none !important; }
+
+/* ─── Responsive ─── */
+@media (max-width: 1060px) {
+  .main-container { grid-template-columns: 1fr; max-width: 560px; }
+  .explanation-panel { position: static; }
+  .phone-frame { width: 100%; height: 700px; }
+}
+@media (max-width: 500px) {
+  .phone-frame { width: 100%; height: 100vh; border-radius: 0; border: none; box-shadow: none; }
+  .phone-wrapper { margin: -20px; }
+  .header { padding: 30px 14px 18px; }
+  .main-container { padding: 0 10px 36px; gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="logo">Well<span>cee</span> 唯心所寓</div>
+  <div class="subtitle">个人资料 AI 增强完善流程 · MVP Demo</div>
+</header>
+
+<div class="main-container">
+  <!-- Left: Product Explanation -->
+  <div class="explanation-panel">
+    <div class="explanation-card">
+      <h3><span class="icon icon-design">🎯</span> 设计思路</h3>
+      <p>
+        Wellcee 用户的核心需求不只是「填资料」，而是<span class="highlight">找到同频的室友</span>和<span class="highlight">合适的房子</span>。
+        传统表单将「你是谁」拆解成几十个复选框，认知负担重、表达受限。
+      </p>
+      <p style="margin-top:10px;">
+        <strong>核心洞察：</strong>用户不抗拒表达自己，抗拒的是「面对一张空白表格不知道怎么填」。
+        AI 的价值不是代写，而是做<span class="highlight">思考搭档</span>——在你卡壳时递上灵感卡片。
+        把「从零填空」变成「确认改错」，把抽象选择题变成具体场景判断。
+      </p>
+      <p style="margin-top:10px;">
+        <strong>设计原则：</strong>AI 完全由用户主动唤起，不插话不弹窗。用户跳过追问 = 选择了更简洁的表达方式——这本身也是人格信号。
+      </p>
+    </div>
+
+    <div class="explanation-card">
+      <h3><span class="icon icon-ai">🤖</span> AI 如何参与流程</h3>
+      <div class="architecture-diagram">
+        <span class="arch-layer">用户自由文本 / 语音</span><br>
+        <span class="arch-arrow">│</span><br>
+        <span class="arch-layer">规则引擎</span> — 关键词精确匹配，提取确定性标签<br>
+        <span class="arch-arrow">│</span> 草稿标签 + 维度缺口<br>
+        <span class="arch-layer">Qwen-Plus</span> — LLM 看全文，确认/修正/补充标签 + 生成追问<br>
+        <span class="arch-arrow">│</span> 用户确认标签<br>
+        <span class="arch-layer">DeepSeek-V3</span> — 基于原文+标签，生成自然简介<br>
+      </div>
+      <ul style="margin-top:12px;">
+        <li>追问策略：具象化 / 场景化 / 画像补充</li>
+        <li>MBTI 只在用户明确提及时提取，不做推断</li>
+        <li>三级降级：主线 → 备线 → GLM-4-Flash 免费兜底</li>
+        <li>单次流程成本约 <strong>¥0.004</strong>（0.4 分钱）</li>
+      </ul>
+    </div>
+
+    <div class="explanation-card">
+      <h3><span class="icon icon-data">📊</span> 数据沉淀与下游应用</h3>
+      <div class="data-flow-grid">
+        <div class="data-flow-item">
+          <div class="label">性格 + 爱好标签</div>
+          <div class="value">🤝 室友匹配</div>
+        </div>
+        <div class="data-flow-item">
+          <div class="label">生活习惯标签</div>
+          <div class="value">🏠 室友画像</div>
+        </div>
+        <div class="data-flow-item">
+          <div class="label">求租偏好标签</div>
+          <div class="value">🔍 房源推荐</div>
+        </div>
+        <div class="data-flow-item">
+          <div class="label">source + confidence</div>
+          <div class="value">📈 匹配权重</div>
+        </div>
+        <div class="data-flow-item">
+          <div class="label">简介文本</div>
+          <div class="value">🛡️ 信任判断</div>
+        </div>
+        <div class="data-flow-item">
+          <div class="label">MBTI / 需求栏</div>
+          <div class="value">🎯 精准筛选</div>
+        </div>
+      </div>
+      <p style="margin-top:12px; font-size:0.84rem;">
+        每个标签带 <span class="highlight">source</span>（来源：原文/追问/规则）和 <span class="highlight">confidence</span>（置信度），
+        下游匹配算法可据此进行加权排序。标签体系外置为独立 YAML 配置，新增维度只需改一个文件。
+        一期中文，二期扩展英文 + 五行。
+      </p>
+    </div>
+  </div>
+
+  <!-- Right: Phone Demo -->
+  <div class="phone-wrapper">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-header">
+        <span class="title" id="phoneTitle">编辑个人资料</span>
+        <span class="step-indicator" id="stepIndicator">Step 1 / 6</span>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-bar-wrap" style="padding: 0 24px;">
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" id="progressBar" style="width: 10%;"></div>
+        </div>
+        <div class="progress-label">
+          <span id="progressText">资料完整度 10%</span>
+          <span id="progressPercent">10%</span>
+        </div>
+      </div>
+
+      <div class="phone-content" id="phoneContent"></div>
+    </div>
+    <p style="text-align:center;margin-top:16px;font-size:0.76rem;color:var(--text-muted);">
+      👆 这是一个可交互的 MVP Demo，点击操作体验完整流程
+    </p>
+  </div>
+</div>
+
+<script>
+// ─── State ───
+// ─── Preset data ───
+const REGION_PRESETS = ['北京','上海','广州','深圳','杭州','成都','武汉','南京','西安','重庆','苏州','长沙','香港','天津','郑州','东莞','厦门','青岛','合肥','大连','沈阳','昆明','福州','宁波','无锡','济南','佛山','珠海','台北','澳门','海外-美国','海外-英国','海外-澳大利亚','海外-日本','海外-韩国','海外-新加坡','海外-德国','海外-法国','海外-加拿大','海外-其他'];
+const LANGUAGE_PRESETS = ['中文','English','日本語','한국어','Français','Deutsch','Español','Italiano','Português','Русский','العربية','हिन्दी','ไทย','Tiếng Việt','Bahasa Indonesia','Tagalog','Nederlands','Svenska','Türkçe'];
+
+const state = {
+  step: 1,
+  basicFields: { avatar_url:'', nickname:'', age:'', occupation:'', region:'', languages:['中文'], demand_types:[] },
+  photos: [],  // [{id, dataUrl, isCover}] — 第一张为封面
+  freeText:'', questions:[], questionHistory:[], answeredQuestionIds:new Set(),
+  tags:{}, bio:'', loading:false, skipAllCount:0
+};
+
+const demandOptions = [
+  { value:'list', label:'我要出租', icon:'🏠' },
+  { value:'transfer', label:'我要转租', icon:'🔄' },
+  { value:'find_roommate_existing', label:'找室友 - 已有房', icon:'🤝' },
+  { value:'find_roommate_searching', label:'找室友 - 还没房', icon:'🤝' },
+  { value:'none', label:'暂无需求，逛逛社区', icon:'👀' }
+];
+
+// ─── Generic Combobox ───
+function initCombobox(cfg){
+  const wrap=document.getElementById(cfg.wrapId);
+  const input=document.getElementById(cfg.inputId);
+  const dropdown=wrap.querySelector('.combobox-dropdown');
+  let highlightIdx=-1;
+
+  function filter(val){
+    const v=val.toLowerCase().trim();
+    if(!v)return cfg.options.map(o=>({label:o,match:''}));
+    return cfg.options.filter(o=>o.toLowerCase().includes(v)).map(o=>{
+      const idx=o.toLowerCase().indexOf(v);
+      return {label:o,prefix:o.slice(0,idx),match:o.slice(idx,idx+v.length),suffix:o.slice(idx+v.length)};
+    });
+  }
+
+  function renderDropdown(filtered){
+    dropdown.innerHTML='';
+    highlightIdx=-1;
+    if(cfg.mode==='multi'&&!input.value.trim()&&cfg.chips.length>0){
+      // Show all options when empty
+    }
+    if(filtered.length===0){
+      const di=document.createElement('div');di.className='combobox-option no-match';
+      di.textContent=input.value.trim()?'未匹配到，按回车使用「'+input.value.trim()+'」':'输入以搜索';
+      dropdown.appendChild(di);
+    }else{
+      filtered.forEach((f,i)=>{
+        const di=document.createElement('div');di.className='combobox-option';di.dataset.idx=i;
+        if(f.match){di.innerHTML=escHTML(f.prefix||'')+'<span class="opt-match">'+escHTML(f.match)+'</span>'+escHTML(f.suffix||'');}
+        else{di.innerHTML='<span class="opt-match">'+escHTML(f.label)+'</span>';}
+        di.addEventListener('mousedown',e=>{e.preventDefault();selectItem(f.label);});
+        dropdown.appendChild(di);
+      });
+    }
+  }
+
+  function selectItem(val){
+    if(cfg.mode==='single'){
+      input.value=val;cfg.onSelect(val);
+    }else{
+      if(!cfg.chips.includes(val)){
+        cfg.chips.push(val);
+        cfg.onChipsChange(cfg.chips);
+        if(cfg.chipsContainerId)refreshChips();
+      }
+      input.value='';input.focus();
+      renderDropdown(filter(''));
+    }
+    closeDropdown();
+  }
+
+  function refreshChips(){
+    const container=document.getElementById(cfg.chipsContainerId);
+    if(!container)return;
+    container.innerHTML=cfg.chips.map(l=>`<span class="combobox-chip">${escHTML(l)}<button class="chip-x" data-lang="${escHTML(l)}">×</button></span>`).join('');
+    container.querySelectorAll('.chip-x').forEach(b=>{b.addEventListener('click',()=>{cfg.chips=cfg.chips.filter(c=>c!==b.dataset.lang);cfg.onChipsChange(cfg.chips);refreshChips();});});
+  }
+
+  if(cfg.mode==='multi'&&cfg.chipsContainerId){
+    refreshChips();
+  }
+
+  function openDropdown(){
+    const v=input.value.trim();
+    const filtered=filter(v);
+    renderDropdown(filtered);
+    wrap.classList.add('open');
+  }
+
+  function closeDropdown(){
+    wrap.classList.remove('open');
+    highlightIdx=-1;
+  }
+
+  input.addEventListener('focus',()=>{openDropdown();});
+  input.addEventListener('input',()=>{openDropdown();});
+  input.addEventListener('keydown',e=>{
+    const items=dropdown.querySelectorAll('.combobox-option:not(.no-match)');
+    if(e.key==='ArrowDown'){e.preventDefault();highlightIdx=Math.min(highlightIdx+1,items.length-1);items.forEach((it,i)=>it.classList.toggle('highlight',i===highlightIdx));}
+    else if(e.key==='ArrowUp'){e.preventDefault();highlightIdx=Math.max(highlightIdx-1,0);items.forEach((it,i)=>it.classList.toggle('highlight',i===highlightIdx));}
+    else if(e.key==='Enter'){e.preventDefault();
+      if(highlightIdx>=0&&items[highlightIdx]){items[highlightIdx].click();}
+      else if(cfg.mode==='multi'&&input.value.trim()){selectItem(input.value.trim());}
+    }
+    else if(e.key==='Escape'){closeDropdown();input.blur();}
+    else if(e.key==='Backspace'&&cfg.mode==='multi'&&!input.value&&cfg.chips.length>0){
+      cfg.chips.pop();cfg.onChipsChange(cfg.chips);refreshChips();
+    }
+  });
+  input.addEventListener('blur',()=>{setTimeout(closeDropdown,150);});
+
+  if(cfg.mode==='single'){
+    input.value=state.basicFields.region||'';
+  }
+}
+
+function getPlaceholder(demandTypes) {
+  if(!demandTypes.length||demandTypes.includes('none')) return '介绍你自己——你的性格、爱好、生活方式…';
+  const p=['介绍你自己'];
+  const hr=demandTypes.some(t=>t.includes('roommate'));
+  const rent=demandTypes.some(t=>t==='find_roommate_searching'||t==='rent');
+  const list=demandTypes.some(t=>t==='list'||t==='transfer');
+  if(hr)p.push('你理想的室友是什么样的——作息、生活习惯');
+  if(list&&demandTypes.includes('transfer'))p.push('为什么转租、房子怎么样');
+  else if(list)p.push('你的房子情况——位置、户型、亮点');
+  if(rent)p.push('你对房子的期望——区域、预算、你最在意什么');
+  return p.join('，')+'…';
+}
+
+// ─── Simulated AI ───
+function simulateAnalyze(text, demandTypes, questionHistory) {
+  const tags={};const questions=[];
+  const categories=['personality','hobby','lifestyle','roommate_expectation','rental_preference','listing_feature','transfer_reason'];
+  categories.forEach(c=>{tags[c]=[];});
+  const keywordMap={
+    '安静':{label:'安静型',cat:'personality',conf:0.9},'内向':{label:'安静型',cat:'personality',conf:0.85},'外向':{label:'外向型',cat:'personality',conf:0.85},'开朗':{label:'外向型',cat:'personality',conf:0.8},
+    '跑步':{label:'跑步',cat:'hobby',conf:0.9},'健身':{label:'健身',cat:'hobby',conf:0.9},'做饭':{label:'烹饪',cat:'hobby',conf:0.85},'烹饪':{label:'烹饪',cat:'hobby',conf:0.9},'下厨':{label:'烹饪',cat:'hobby',conf:0.85},
+    '看书':{label:'阅读',cat:'hobby',conf:0.85},'电影':{label:'看电影',cat:'hobby',conf:0.8},'追剧':{label:'看电影',cat:'hobby',conf:0.8},'音乐':{label:'音乐',cat:'hobby',conf:0.8},'旅行':{label:'旅行',cat:'hobby',conf:0.8},'游戏':{label:'游戏',cat:'hobby',conf:0.8},
+    '不吸烟':{label:'不吸烟',cat:'lifestyle',conf:0.95},'不抽烟':{label:'不吸烟',cat:'lifestyle',conf:0.95},'作息规律':{label:'正常作息',cat:'lifestyle',conf:0.85},'早睡':{label:'早睡型',cat:'lifestyle',conf:0.85},'晚睡':{label:'晚睡型',cat:'lifestyle',conf:0.85},'夜猫子':{label:'晚睡型',cat:'lifestyle',conf:0.9},
+    '猫':{label:'养宠物',cat:'lifestyle',conf:0.85},'狗':{label:'养宠物',cat:'lifestyle',conf:0.85},'宠物':{label:'养宠物',cat:'lifestyle',conf:0.8},'宅':{label:'宅家型',cat:'lifestyle',conf:0.8},
+    '干净':{label:'高清洁标准',cat:'roommate_expectation',conf:0.85},'整洁':{label:'高清洁标准',cat:'roommate_expectation',conf:0.8},'洁癖':{label:'高清洁标准',cat:'roommate_expectation',conf:0.9},'室友':{label:'作息规律',cat:'roommate_expectation',conf:0.7},
+    '地铁':{label:'近地铁',cat:'rental_preference',conf:0.9},'3000':{label:'预算3000以内',cat:'rental_preference',conf:0.8},'4000':{label:'预算3000-5000',cat:'rental_preference',conf:0.8},'5000':{label:'预算5000以上',cat:'rental_preference',conf:0.8},
+    'INFP':{label:'INFP',cat:'personality',conf:0.95},'ENFJ':{label:'ENFJ',cat:'personality',conf:0.95},'INTJ':{label:'INTJ',cat:'personality',conf:0.95},'ISFP':{label:'ISFP',cat:'personality',conf:0.95},
+  };
+  const seen=new Set();
+  Object.entries(keywordMap).forEach(([kw,info])=>{
+    if(text.includes(kw)&&!seen.has(info.label+info.cat)){seen.add(info.label+info.cat);tags[info.cat].push({label:info.label,source:'free_text',confidence:info.conf});}
+  });
+  questionHistory.forEach(qh=>{
+    const a=qh.answer;if(!a||a.includes('跳过'))return;
+    Object.entries(keywordMap).forEach(([kw,info])=>{
+      if(a.includes(kw)&&!seen.has(info.label+info.cat+'qa')){seen.add(info.label+info.cat+'qa');
+        const ex=tags[info.cat].find(t=>t.label===info.label);
+        if(ex){ex.source='question_answer';ex.confidence=Math.max(ex.confidence,0.95);}
+        else tags[info.cat].push({label:info.label,source:'question_answer',confidence:0.95});}
+    });
+  });
+  const asked=new Set(questionHistory.map(q=>q.question_id));
+  if(text.includes('运动')&&!text.match(/跑步|健身|游泳|瑜伽|球类|篮球|足球|羽毛球/)&&!asked.has('q_hobby')){questions.push({id:'q_hobby',text:'💡 说到「运动」——你主要玩什么类型？',dimension:'hobby_detail',strategy:'concretize',options:[{label:'🏃 跑步/健身',tag:'爱好-跑步健身'},{label:'⚽ 球类运动',tag:'爱好-球类'},{label:'🧘 瑜伽/普拉提',tag:'爱好-瑜伽'},{label:'✏️ 自己写',tag:null}]});}
+  if((text.includes('安静')||tags['personality']?.some(t=>t.label==='安静型'))&&!asked.has('q_noise')){questions.push({id:'q_noise',text:'💡 说到安静——你对室友晚上的声音有什么期望？',dimension:'noise_tolerance',strategy:'scenario',options:[{label:'🤫 晚上10点以后尽量安静',tag:'室友期望-安静偏好'},{label:'👍 只要不吵到我睡觉就行',tag:'室友期望-中等噪音容忍'},{label:'😊 不太在意，自由就好',tag:'室友期望-高噪音容忍'},{label:'✏️ 自己写',tag:null}]});}
+  const hasRoommate=demandTypes.some(t=>t.includes('roommate'));
+  if(hasRoommate&&!text.match(/干净|整洁|打扫|清洁|洁癖|卫生/)&&!asked.has('q_clean')){questions.push({id:'q_clean',text:'💡 你对合租的清洁标准大概是？',dimension:'cleaning_habit',strategy:'supplement',options:[{label:'🧹 定期大扫除，保持整洁',tag:'室友期望-高清洁标准'},{label:'🧽 基本整洁，不太计较',tag:'室友期望-中等清洁标准'},{label:'🧺 随性就好，舒服最重要',tag:'室友期望-低清洁标准'},{label:'✏️ 自己写',tag:null}]});}
+  if(!text.match(/INFP|ENFJ|INTJ|ISFP|ISTJ|ENFP|INFJ|ESTJ|ESFJ|ISTP|ESTP|ENTP|INTP|ENTJ|ISFJ|ESFP|mbti/i)&&!asked.has('q_mbti')){questions.push({id:'q_mbti',text:'💡 你知道自己的 MBTI 类型吗？这能帮助找到同频室友',dimension:'mbti',strategy:'supplement',options:[{label:'😌 INFP / INFJ（内向理想型）',tag:'性格-INFP'},{label:'🤔 INTJ / INTP（理性分析型）',tag:'性格-INTJ'},{label:'😄 ENFP / ENFJ（外向感染型）',tag:'性格-ENFP'},{label:'🤷 不太清楚，跳过',tag:null}]});}
+  let finalQ=questions.slice(0,3);
+  if(!finalQ.length&&hasRoommate){finalQ.push({id:'q_cook',text:'💡 你希望的厨房共享氛围是？',dimension:'cooking',strategy:'supplement',options:[{label:'🍳 偶尔一起做饭很开心',tag:'室友期望-一起做饭'},{label:'👨‍🍳 各做各的，排好时间',tag:'室友期望-独立厨房'},{label:'🏠 我很少做饭',tag:'室友期望-少用厨房'},{label:'✏️ 自己写',tag:null}]});}
+  return {tags,questions:finalQ};
+}
+
+function simulateBio(text, confirmedTags, demandTypes) {
+  const all=Object.values(confirmedTags).flat();
+  const personality=all.filter(l=>['安静型','外向型','INFP','ENFJ','INTJ','ISFP','中间型'].includes(l));
+  const hobbies=all.filter(l=>['跑步','健身','烹饪','阅读','看电影','音乐','旅行','游戏'].includes(l));
+  const lifestyle=all.filter(l=>['不吸烟','早睡型','晚睡型','正常作息','养宠物','宅家型'].includes(l));
+  const hasRoommate=demandTypes.some(t=>t.includes('roommate'));
+  const hasRent=demandTypes.some(t=>t.includes('find_roommate_searching'));
+  const parts=[];
+  const who=[];if(text.includes('设计师'))who.push('做设计的');else if(text.includes('学生')||text.includes('大学'))who.push('在读学生');else if(text.match(/工作|上班/))who.push('上班族');
+  if(text.includes('上海'))who.push('在上海');else if(text.includes('北京'))who.push('在北京');
+  const pText=personality.length?personality[0]:'';
+  if(who.length)parts.push(who.join('，')+(pText?'，'+pText:''));else parts.push(pText||text.slice(0,30).replace(/[\n\r]/g,''));
+  const mid=[];
+  if(lifestyle.length)mid.push(lifestyle.slice(0,2).join('、'));
+  if(hobbies.length)mid.push('周末喜欢'+hobbies.slice(0,2).join('和'));
+  if(mid.length)parts.push(mid.join('，'));
+  if(hasRoommate&&hasRent)parts.push('希望能找到作息合拍、可以偶尔一起做饭的室友，也在找附近的房子');
+  else if(hasRoommate)parts.push('希望能找到作息规律、安静好相处的室友，一起把日子过好');
+  else if(hasRent)parts.push('目前正在找房子，看重交通便利和居住舒适度');
+  let bio=parts.join('。')+'。';if(bio.length>200)bio=bio.slice(0,197)+'…';return {bio};
+}
+
+// ─── Render ───
+const content=document.getElementById('phoneContent');
+const progressBar=document.getElementById('progressBar');
+const progressText=document.getElementById('progressText');
+const progressPercent=document.getElementById('progressPercent');
+const stepIndicator=document.getElementById('stepIndicator');
+const phoneTitle=document.getElementById('phoneTitle');
+
+function updateProgress(step) {
+  const pcts={1:10,2:25,3:50,4:70,5:90,6:100};
+  const labels={1:'填写基本信息',2:'自由表达',3:'AI 追问中',4:'确认标签',5:'生成简介',6:'✨ 完成'};
+  const pct=pcts[step]||10;
+  progressBar.style.width=pct+'%';progressText.textContent='资料完整度 '+pct+'%';progressPercent.textContent=pct+'%';
+  stepIndicator.textContent='Step '+step+' / 6';
+}
+
+function render(step) {
+  updateProgress(step);content.innerHTML='';
+  switch(step){case 1:renderStep1();break;case 2:renderStep2();break;case 3:renderStep3();break;case 4:renderStep4();break;case 5:renderStep5();break;case 6:renderStep6();break;}
+  content.scrollTop=0;
+}
+
+// ─── Step 1 ───
+function renderStep1() {
+  phoneTitle.textContent='编辑个人资料';
+  const dChips=demandOptions.map(o=>
+    `<button class="demand-chip${state.basicFields.demand_types.includes(o.value)?' active':''}" data-value="${o.value}">${o.icon} ${o.label}</button>`
+  ).join('');
+
+  // Build photo slots
+  const MAX_PHOTOS=6;
+  const photoSlots=[];
+  for(let i=0;i<MAX_PHOTOS;i++){
+    const p=state.photos[i];
+    if(p){
+      photoSlots.push(`<div class="photo-slot filled${i===0?' cover-badge':''}" data-idx="${i}" draggable="true" style="background-image:url(${p.dataUrl})"><button class="photo-remove" data-idx="${i}">&times;</button></div>`);
+    }else{
+      photoSlots.push(`<div class="photo-slot" data-idx="${i}">+</div>`);
+    }
+  }
+
+  content.innerHTML=`
+    <div class="fade-in">
+      <div class="step-intro"><div class="step-intro-title">基本信息</div><div class="step-intro-desc">这些信息将展示在你的个人主页</div></div>
+
+      <!-- Photo Upload -->
+      <div class="photo-upload-section">
+        <div class="photo-upload-label">
+          <span>个人照片</span>
+          <span class="photo-hint">第一张为封面头像 · 拖动可调整顺序</span>
+        </div>
+        <div class="photo-grid" id="photoGrid">
+          ${photoSlots.join('')}
+        </div>
+        <div class="photo-max-hint">${state.photos.length}/${MAX_PHOTOS} · 点击 + 上传照片</div>
+      </div>
+
+      <!-- Hidden file input -->
+      <input type="file" id="photoInput" accept="image/*" style="display:none" multiple>
+
+      <div class="form-group"><label>昵称</label><input class="form-input" id="nickname" placeholder="你的昵称" value="${escHTML(state.basicFields.nickname)}"></div>
+      <div class="form-group"><label>年龄</label><input class="form-input" id="age" type="number" min="16" max="80" placeholder="如：26" value="${state.basicFields.age}"></div>
+      <div class="form-group"><label>职业</label><input class="form-input" id="occupation" placeholder="如：设计师" value="${escHTML(state.basicFields.occupation)}"></div>
+      <div class="form-group"><label>地区</label>
+        <div class="combobox-wrap" id="wrap-region">
+          <input class="form-input" id="region" placeholder="输入或选择城市" value="${escHTML(state.basicFields.region)}" autocomplete="off">
+          <span class="combobox-arrow">▼</span>
+          <div class="combobox-dropdown"></div>
+        </div>
+      </div>
+      <div class="form-group"><label>语言</label>
+        <div class="combobox-wrap" id="wrap-languages">
+          <input class="form-input" id="langInput" placeholder="输入或选择语言，可添加多个" autocomplete="off">
+          <span class="combobox-arrow">▼</span>
+          <div class="combobox-dropdown"></div>
+        </div>
+        <div class="combobox-chips" id="langChips">${state.basicFields.languages.map(l=>`<span class="combobox-chip">${escHTML(l)}<button class="chip-x" data-lang="${escHTML(l)}">×</button></span>`).join('')}</div>
+        <span class="form-hint">输入后回车或点击下拉选项添加</span>
+      </div>
+      <div class="form-group"><label>我当前的需求（可多选）</label><div class="demand-chips" id="demandChips">${dChips}</div></div>
+      <button class="btn btn-primary" id="btnFormNext">保存，下一步 →</button>
+    </div>`;
+
+  // ─── Photo upload logic ───
+  const photoInput=document.getElementById('photoInput');
+  let dragSrcIdx=null;
+
+  function refreshPhotoGrid(){
+    const grid=document.getElementById('photoGrid');if(!grid)return;
+    grid.innerHTML='';
+    for(let i=0;i<MAX_PHOTOS;i++){
+      const p=state.photos[i];
+      const slot=document.createElement('div');
+      slot.className='photo-slot'+(p?' filled'+(i===0?' cover-badge':''):'');
+      slot.dataset.idx=i;
+      if(p){
+        slot.style.backgroundImage=`url(${p.dataUrl})`;
+        slot.draggable=true;
+        const rm=document.createElement('button');rm.className='photo-remove';rm.textContent='×';
+        rm.addEventListener('click',e=>{e.stopPropagation();state.photos.splice(i,1);refreshPhotoGrid();});
+        slot.appendChild(rm);
+      }else{slot.textContent='+';}
+      // Drag events
+      slot.addEventListener('dragstart',e=>{if(!p)return;dragSrcIdx=i;slot.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+      slot.addEventListener('dragend',()=>{slot.classList.remove('dragging');document.querySelectorAll('.photo-slot').forEach(s=>s.classList.remove('drag-over'));});
+      slot.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';slot.classList.add('drag-over');});
+      slot.addEventListener('dragleave',()=>{slot.classList.remove('drag-over');});
+      slot.addEventListener('drop',e=>{e.preventDefault();slot.classList.remove('drag-over');if(dragSrcIdx===null||dragSrcIdx===i)return;
+        const [moved]=state.photos.splice(dragSrcIdx,1);state.photos.splice(i,0,moved);refreshPhotoGrid();});
+      // Click to upload
+      slot.addEventListener('click',()=>{if(!p){photoInput.click();}});
+      grid.appendChild(slot);
+    }
+    // Update hint
+    const hint=document.querySelector('.photo-max-hint');
+    if(hint)hint.textContent=`${state.photos.length}/${MAX_PHOTOS} · 点击 + 上传照片`;
+  }
+
+  // Handle file selection
+  photoInput.addEventListener('change',()=>{
+    const files=Array.from(photoInput.files);
+    const remaining=MAX_PHOTOS-state.photos.length;
+    const toAdd=files.slice(0,remaining);
+    let processed=0;
+    toAdd.forEach(file=>{
+      const reader=new FileReader();
+      reader.onload=()=>{
+        state.photos.push({id:'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),dataUrl:reader.result,isCover:state.photos.length===0});
+        processed++;if(processed===toAdd.length){refreshPhotoGrid();}
+      };
+      reader.readAsDataURL(file);
+    });
+    if(files.length>remaining)alert(`最多上传 ${MAX_PHOTOS} 张照片，已自动截取前 ${remaining} 张`);
+    if(toAdd.length===0)refreshPhotoGrid();
+    photoInput.value='';
+  });
+
+  // Refresh grid on first render
+  refreshPhotoGrid();
+
+  // ─── Demand chips ───
+  document.querySelectorAll('.demand-chip').forEach(chip=>{chip.addEventListener('click',()=>{const v=chip.dataset.value;let t=[...state.basicFields.demand_types];if(v==='none')t=t.includes('none')?[]:['none'];else{t=t.filter(x=>x!=='none');t.includes(v)?t=t.filter(x=>x!==v):t.push(v);if(!t.length)t=['none'];}state.basicFields.demand_types=t;document.querySelectorAll('.demand-chip').forEach(c=>c.classList.toggle('active',t.includes(c.dataset.value)));});});
+
+  // ─── Next button ───
+  document.getElementById('btnFormNext').addEventListener('click',()=>{
+    state.basicFields.nickname=document.getElementById('nickname').value;
+    state.basicFields.age=document.getElementById('age').value;
+    state.basicFields.occupation=document.getElementById('occupation').value;
+    state.basicFields.region=document.getElementById('region').value;
+    if(state.basicFields.languages.length===0)state.basicFields.languages=['中文'];
+    if(state.photos.length>0)state.basicFields.avatar_url=state.photos[0].dataUrl;
+    state.step=2;render(2);
+  });
+
+  // ─── Combobox: Region ───
+  initCombobox({
+    wrapId:'wrap-region', inputId:'region',
+    options:REGION_PRESETS,
+    onSelect:(val)=>{state.basicFields.region=val;},
+    mode:'single'
+  });
+
+  // ─── Combobox: Languages ───
+  initCombobox({
+    wrapId:'wrap-languages', inputId:'langInput',
+    options:LANGUAGE_PRESETS,
+    chipsContainerId:'langChips',
+    chips:state.basicFields.languages,
+    onChipsChange:(chips)=>{state.basicFields.languages=chips;},
+    mode:'multi'
+  });
+}
+
+// ─── Step 2 ───
+function renderStep2() {
+  phoneTitle.textContent='自由表达';
+  const ph=getPlaceholder(state.basicFields.demand_types);
+  content.innerHTML=`
+    <div class="fade-in">
+      <div class="step-intro"><span class="step-intro-icon">✍️</span><div class="step-intro-title">用一段话介绍你自己</div><div class="step-intro-desc">AI 会在你写完后帮你挖掘亮点、补充盲区</div></div>
+      <textarea class="form-textarea" id="freeText" placeholder="${ph}" maxlength="2000">${escHTML(state.freeText)}</textarea>
+      <span class="form-hint" id="charCount">${state.freeText.length}/2000 · 至少输入 10 个字即可触发 AI</span>
+      <button class="btn btn-primary" id="btnAnalyze"${state.freeText.length>=10?'':' disabled'}>✨ AI 帮我看看</button>
+    </div>`;
+  const ta=document.getElementById('freeText'),cc=document.getElementById('charCount'),ba=document.getElementById('btnAnalyze');
+  ta.addEventListener('input',()=>{const l=ta.value.length;cc.textContent=l+'/2000 · 至少输入 10 个字即可触发 AI';ba.disabled=l<10;});
+  ba.addEventListener('click',()=>{state.freeText=ta.value;state.loading=true;state.step=3;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在分析你的自我介绍…</p><p class="ai-thinking-sub">识别关键标签 · 发现可深化的话题</p></div>`;
+    setTimeout(()=>{const r=simulateAnalyze(state.freeText,state.basicFields.demand_types,state.questionHistory);state.tags=r.tags;state.questions=r.questions;state.answeredQuestionIds=new Set();state.loading=false;if(!state.questions.length||state.skipAllCount>=3){state.step=4;render(4);}else render(3);},1500);});
+}
+
+// ─── Step 3 ───
+function renderStep3() {
+  phoneTitle.textContent='AI 追问';
+  if(state.skipAllCount>=3){state.step=4;render(4);return;}
+  const unanswered=state.questions.filter(q=>!state.answeredQuestionIds.has(q.id));
+  if(!unanswered.length){state.step=4;render(4);return;}
+  const q=unanswered[0];
+  content.innerHTML=`
+    <div class="fade-in">
+      <div class="question-header"><span class="q-badge">${state.answeredQuestionIds.size+1}/${state.questions.length}</span> AI 发现可优化的地方</div>
+      <div class="question-bubble">
+        <p class="q-text">${q.text}</p>
+        <div class="question-options">${q.options.map(o=>`<button class="option-chip" data-answer="${escHTML(o.tag||o.label)}">${o.label}</button>`).join('')}</div>
+        <button class="q-skip" id="btnSkipOne">─ 不感兴趣，跳过 →</button>
+      </div>
+      <div class="skip-banner"><button id="btnSkipAll">🙈 全部跳过，直接查看标签</button></div>
+    </div>`;
+  document.querySelectorAll('.option-chip').forEach(chip=>{chip.addEventListener('click',()=>{const a=chip.dataset.answer;state.questionHistory.push({question_id:q.id,question_text:q.text,answer:a});state.answeredQuestionIds.add(q.id);render(3);});});
+  document.getElementById('btnSkipOne').addEventListener('click',()=>{state.answeredQuestionIds.add(q.id);state.questionHistory.push({question_id:q.id,question_text:q.text,answer:'跳过'});render(3);});
+  document.getElementById('btnSkipAll').addEventListener('click',()=>{state.skipAllCount++;state.questions.forEach(qq=>{if(!state.answeredQuestionIds.has(qq.id)){state.answeredQuestionIds.add(qq.id);state.questionHistory.push({question_id:qq.id,question_text:qq.text,answer:'跳过'});}});state.step=4;render(4);});
+}
+
+// ─── Step 4 ───
+function renderStep4() {
+  phoneTitle.textContent='确认标签';
+  const catIcons={personality:'🧠',hobby:'🎯',lifestyle:'🏠',roommate_expectation:'🤝',rental_preference:'🔍',listing_feature:'🏡',transfer_reason:'📋'};
+  const catLabels={personality:'性格标签',hobby:'爱好标签',lifestyle:'生活习惯',roommate_expectation:'室友期望',rental_preference:'求租偏好',listing_feature:'房源特征',transfer_reason:'转租原因'};
+  const hasRoommate=state.basicFields.demand_types.some(t=>t.includes('roommate'));
+  const hasRent=state.basicFields.demand_types.some(t=>t.includes('find_roommate_searching'));
+  const hasList=state.basicFields.demand_types.some(t=>t==='list'||t==='transfer');
+  const relevant=['personality','hobby','lifestyle'];
+  if(hasRoommate)relevant.push('roommate_expectation');if(hasRent)relevant.push('rental_preference');if(hasList)relevant.push('listing_feature');if(state.basicFields.demand_types.includes('transfer'))relevant.push('transfer_reason');
+  let total=0,secs='';relevant.forEach(c=>{const tl=state.tags[c]||[];if(!tl.length)return;total+=tl.length;
+    secs+=`<div class="tag-section"><h4>${catIcons[c]||'🏷️'} ${catLabels[c]||c}</h4><div class="tag-chips-wrap">${tl.map((t,i)=>`<span class="tag-chip${t.source==='question_answer'?' tag-source-qa':' tag-confirmed'}">${t.label}<button class="tag-remove" data-cat="${c}" data-idx="${i}">×</button></span>`).join('')}<button class="tag-add" data-cat="${c}">+ 添加</button></div></div>`;});
+  content.innerHTML=`
+    <div class="fade-in">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px;"><span class="tag-total">${total}</span><span style="font-size:0.84rem;color:var(--text-secondary);font-weight:600;">个标签已识别</span></div>
+      <p class="tag-subtitle">标签来自你的原文和追问回答，确认后可修改。<span class="tag-chip tag-source-qa" style="display:inline-flex;vertical-align:middle;font-size:0.68rem;">追问得来💬</span></p>
+      ${secs}
+      <div style="display:flex;gap:10px;margin-top:22px;"><button class="btn btn-secondary" id="btnReanalyze" style="flex:1;">🔄 继续追问</button><button class="btn btn-primary" id="btnConfirmTags" style="flex:1;margin-top:0;">确认，生成简介 →</button></div>
+    </div>`;
+  document.querySelectorAll('.tag-remove').forEach(b=>b.addEventListener('click',()=>{const cat=b.dataset.cat,idx=parseInt(b.dataset.idx);state.tags[cat].splice(idx,1);render(4);}));
+  document.querySelectorAll('.tag-add').forEach(b=>b.addEventListener('click',()=>{const cat=b.dataset.cat;const label=prompt(`为「${catLabels[cat]||cat}」添加标签：`);if(label&&label.trim()){if(!state.tags[cat])state.tags[cat]=[];state.tags[cat].push({label:label.trim(),source:'free_text',confidence:1.0});render(4);}}));
+  document.getElementById('btnReanalyze').addEventListener('click',()=>{state.step=2;render(2);});
+  document.getElementById('btnConfirmTags').addEventListener('click',()=>{state.loading=true;state.step=5;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在为你生成个人简介…</p><p class="ai-thinking-sub">基于你的原文和确认标签，组织自然流畅的表达</p></div>`;
+    setTimeout(()=>{const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});const r=simulateBio(state.freeText,ct,state.basicFields.demand_types);state.bio=r.bio;state.loading=false;render(5);},1800);});
+}
+
+// ─── Step 5 ───
+function renderStep5() {
+  phoneTitle.textContent='个人简介';
+  content.innerHTML=`
+    <div class="fade-in">
+      <div class="step-intro"><span class="step-intro-icon">📝</span><div class="step-intro-title">AI 为你生成的个人简介</div><div class="step-intro-desc">基于你的原文和确认标签，可直接修改</div></div>
+      <div class="bio-card"><p class="bio-text" id="bioText">${escHTML(state.bio)}</p></div>
+      <textarea class="form-textarea" id="bioEdit" style="min-height:80px;margin-bottom:14px;">${escHTML(state.bio)}</textarea>
+      <span class="form-hint">你可以直接修改简介，200 字以内</span>
+      <div style="display:flex;gap:10px;margin-top:14px;"><button class="btn btn-secondary" id="btnCopy" style="flex:1;">📋 复制</button><button class="btn btn-secondary" id="btnRegenerate" style="flex:1;">🔄 重新生成</button></div>
+      <button class="btn btn-primary" id="btnSave">✅ 保存资料</button>
+    </div>`;
+  document.getElementById('btnCopy').addEventListener('click',()=>{navigator.clipboard.writeText(document.getElementById('bioEdit').value);const b=document.getElementById('btnCopy');b.textContent='✅ 已复制';setTimeout(()=>{b.textContent='📋 复制';},2000);});
+  document.getElementById('btnRegenerate').addEventListener('click',()=>{state.loading=true;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">重新生成中…</p></div>`;setTimeout(()=>{const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});const r=simulateBio(state.freeText,ct,state.basicFields.demand_types);state.bio=r.bio;state.loading=false;render(5);},1200);});
+  document.getElementById('btnSave').addEventListener('click',()=>{state.bio=document.getElementById('bioEdit').value;state.step=6;render(6);});
+}
+
+// ─── Step 6 ───
+function renderStep6() {
+  phoneTitle.textContent='✨ 完成';
+  const total=Object.values(state.tags).flat().length;
+  const cats=Object.keys(state.tags).filter(k=>state.tags[k].length>0).length;
+  const demandLabels=state.basicFields.demand_types.map(t=>demandOptions.find(o=>o.value===t)?.label||t).join('、')||'暂无';
+  content.innerHTML=`
+    <div class="fade-in">
+      <div class="success-state"><div class="success-icon">✨</div><div class="success-title">资料已完善！</div><div class="success-subtitle">你的资料已经可以被室友和房东看到</div></div>
+      <div class="summary-card">
+        <div class="summary-row"><span class="s-label">昵称</span><span class="s-value">${escHTML(state.basicFields.nickname||'—')}</span></div>
+        <div class="summary-row"><span class="s-label">职业</span><span class="s-value">${escHTML(state.basicFields.occupation||'—')}</span></div>
+        <div class="summary-row"><span class="s-label">地区</span><span class="s-value">${escHTML(state.basicFields.region||'—')}</span></div>
+        <div class="summary-row"><span class="s-label">需求</span><span class="s-value">${demandLabels}</span></div>
+        <div class="summary-row"><span class="s-label">标签数</span><span class="s-value">${total} 个 · 覆盖 ${cats} 个维度</span></div>
+        <div class="summary-row"><span class="s-label">简介字数</span><span class="s-value">${state.bio.length} 字</span></div>
+      </div>
+      <div style="margin-top:18px;text-align:center;"><p style="font-size:0.78rem;color:var(--text-muted);">📝 原创内容 · 🤖 AI 追问辅助 · 🏷️ 标签经你确认</p><button class="btn btn-primary" id="btnRestart" style="margin-top:16px;">🔄 重新体验 Demo</button></div>
+    </div>`;
+  document.getElementById('btnRestart').addEventListener('click',()=>{state.step=1;state.freeText='';state.questions=[];state.questionHistory=[];state.answeredQuestionIds=new Set();state.tags={};state.bio='';state.loading=false;state.skipAllCount=0;state.photos=[];state.basicFields.languages=['中文'];state.basicFields.demand_types=[];render(1);});
+}
+
+function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+render(1);
+</script>
+</body>
+</html>
