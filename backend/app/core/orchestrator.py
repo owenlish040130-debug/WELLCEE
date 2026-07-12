@@ -30,7 +30,7 @@ ANALYZE_SCHEMA = {
         },
         "questions": {
             "type": "array",
-            "maxItems": 3,
+            "maxItems": 6,
             "items": {
                 "type": "object",
                 "required": ["id", "text", "options"],
@@ -81,6 +81,18 @@ def _parse_json_response(raw: str) -> dict:
         start = raw.index("```") + 3
         end = raw.index("```", start)
         return json.loads(raw[start:end].strip())
+    # 尝试从 { 开始到 } 结束提取 JSON（处理 LLM 返回 JSON 后有额外文本的情况）
+    brace_start = raw.find("{")
+    if brace_start >= 0:
+        depth = 0
+        for i in range(brace_start, len(raw)):
+            if raw[i] == "{":
+                depth += 1
+            elif raw[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    extracted = raw[brace_start : i + 1]
+                    return json.loads(extracted)
     raise ValueError(f"无法从 LLM 响应中提取 JSON: {raw[:300]}...")
 
 
@@ -95,8 +107,15 @@ async def analyze_with_fallback(
     追问+标签分析。
     降级链：Qwen-Plus → GLM-4-Air → GLM-4-Flash
     """
+    # 合并原文 + 追问答案，让 LLM 看到完整信息
+    full_text = free_text
+    for qh in question_history:
+        ans = qh.get("answer", "")
+        if ans and ans != "跳过":
+            full_text += f"\n[追问回答] {qh.get('question_text', '')} → {ans}"
+
     prompt = render_prompt("analyze", {
-        "free_text": free_text,
+        "free_text": full_text,
         "demand_types": demand_types,
         "draft_tags": draft_tags,
         "dimension_gaps": dimension_gaps,

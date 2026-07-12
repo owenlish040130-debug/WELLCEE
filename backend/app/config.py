@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     glm_api_key: str = ""
     glm_base_url: str = "https://open.bigmodel.cn/api/paas/v4"
 
+    # 阿里云 DashScope（语音识别 + Qwen 备选）
+    dashscope_api_key: str = ""
+
     # LLM 调用参数
     llm_timeout: int = 30
     llm_max_retries: int = 2

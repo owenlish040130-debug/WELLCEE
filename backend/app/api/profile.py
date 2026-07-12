@@ -1,11 +1,13 @@
 """
 个人资料 API 端点
-- POST /api/profile/ai/analyze  — 追问生成 + 标签提取
-- POST /api/profile/ai/bio       — 个人简介生成
+- POST /api/profile/ai/analyze   — 追问生成 + 标签提取
+- POST /api/profile/ai/bio        — 个人简介生成
+- POST /api/profile/ai/transcribe — 语音转文字
 - GET  /api/profile/tags/taxonomy — 标签体系获取
 - PUT  /api/profile/fields        — 保存最终资料
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
+from pydantic import BaseModel
 from app.core.schemas import (
     AnalyzeRequest, AnalyzeResponse,
     BioRequest, BioResponse,
@@ -69,6 +71,24 @@ async def generate_bio(req: BioRequest):
         raise HTTPException(status_code=503, detail=str(e))
 
     return BioResponse(**result)
+
+
+class TranscribeResponse(BaseModel):
+    text: str
+
+
+@router.post("/ai/transcribe", response_model=TranscribeResponse)
+async def transcribe_audio(audio: UploadFile = File(...)):
+    """语音转文字 - 调用阿里云 Paraformer-v2。前端传入 WAV 音频。"""
+    from app.services.asr import transcribe_audio
+    try:
+        audio_bytes = await audio.read()
+        text = await transcribe_audio(audio_bytes)
+        return TranscribeResponse(text=text)
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"语音识别失败: {str(e)}")
 
 
 @router.get("/tags/taxonomy")

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wellcee 个人资料 AI 增强 — MVP Demo</title>
+<title>Wellcee 个人资料 AI 增强 — MVP</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -655,6 +655,63 @@ body {
 }
 .option-chip:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
 .option-chip.selected { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
+/* MBTI 4x4 grid */
+.mbti-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.mbti-row-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  margin-bottom: -2px;
+  padding-left: 2px;
+}
+.mbti-cell {
+  padding: 5px 3px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.65rem;
+  cursor: pointer;
+  background: #fff;
+  color: var(--text-secondary);
+  text-align: center;
+  transition: all var(--transition);
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+.mbti-cell:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+/* Inline input for "其他" */
+.inline-other-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.inline-other-row input {
+  flex: 1;
+  padding: 7px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  font-size: 0.78rem;
+  font-family: var(--font-body);
+  outline: none;
+}
+.inline-other-row input:focus { border-color: var(--primary); }
+.inline-other-row button {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 14px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-body);
+}
 .q-skip {
   display: inline-block;
   margin-top: 12px;
@@ -858,46 +915,38 @@ body {
 <!-- Header -->
 <header class="header">
   <div class="logo">Well<span>cee</span> 唯心所寓</div>
-  <div class="subtitle">个人资料 AI 增强完善流程 · MVP Demo</div>
+  <div class="subtitle">个人资料 AI 增强完善流程 · MVP</div>
 </header>
 
 <div class="main-container">
   <!-- Left: Product Explanation -->
   <div class="explanation-panel">
-    <div class="explanation-card">
-      <h3><span class="icon icon-design">🎯</span> 设计思路</h3>
-      <p>
-        Wellcee 用户的核心需求不只是「填资料」，而是<span class="highlight">找到同频的室友</span>和<span class="highlight">合适的房子</span>。
-        传统表单将「你是谁」拆解成几十个复选框，认知负担重、表达受限。
-      </p>
-      <p style="margin-top:10px;">
-        <strong>核心洞察：</strong>用户不抗拒表达自己，抗拒的是「面对一张空白表格不知道怎么填」。
-        AI 的价值不是代写，而是做<span class="highlight">思考搭档</span>——在你卡壳时递上灵感卡片。
-        把「从零填空」变成「确认改错」，把抽象选择题变成具体场景判断。
-      </p>
-      <p style="margin-top:10px;">
-        <strong>设计原则：</strong>AI 完全由用户主动唤起，不插话不弹窗。用户跳过追问 = 选择了更简洁的表达方式——这本身也是人格信号。
-      </p>
-    </div>
+	    <div class="explanation-card">
+	      <h3><span class="icon icon-design">🎯</span> 我们解决什么问题</h3>
+	      <p>
+	        在 Wellcee 上，完善的个人资料是<span class="highlight">找房推荐</span>、<span class="highlight">室友匹配</span>和<span class="highlight">信任建设</span>的基础。
+	        但传统填表方式让用户面对几十个字段——不知道填什么、懒得填、填了也不够个性化。
+	      </p>
+	      <p style="margin-top:10px;">
+	        通过 AI 大模型介入，我们让用户<span class="highlight">更快地完善资料</span>，同时<span class="highlight">提升资料完整度和个性化表达</span>。
+	        用户只需一段自由文本，AI 负责理解、追问、提炼、生成——把填表变成对话，把数据变成画像。
+	      </p>
+	      <p style="margin-top:10px;">
+	        这些高质量的结构化数据，将直接服务于下游的找房推荐、室友匹配和信任判断——让每一次连接都更精准。
+	      </p>
+	    </div>
 
-    <div class="explanation-card">
-      <h3><span class="icon icon-ai">🤖</span> AI 如何参与流程</h3>
-      <div class="architecture-diagram">
-        <span class="arch-layer">用户自由文本 / 语音</span><br>
-        <span class="arch-arrow">│</span><br>
-        <span class="arch-layer">规则引擎</span> — 关键词精确匹配，提取确定性标签<br>
-        <span class="arch-arrow">│</span> 草稿标签 + 维度缺口<br>
-        <span class="arch-layer">Qwen-Plus</span> — LLM 看全文，确认/修正/补充标签 + 生成追问<br>
-        <span class="arch-arrow">│</span> 用户确认标签<br>
-        <span class="arch-layer">DeepSeek-V3</span> — 基于原文+标签，生成自然简介<br>
-      </div>
-      <ul style="margin-top:12px;">
-        <li>追问策略：具象化 / 场景化 / 画像补充</li>
-        <li>MBTI 只在用户明确提及时提取，不做推断</li>
-        <li>三级降级：主线 → 备线 → GLM-4-Flash 免费兜底</li>
-        <li>单次流程成本约 <strong>¥0.004</strong>（0.4 分钱）</li>
-      </ul>
-    </div>
+	    <div class="explanation-card">
+	      <h3><span class="icon icon-ai">🤖</span> AI 如何参与过程</h3>
+	      <p style="font-weight:600;color:var(--text);margin-bottom:8px;">1. 智能引导</p>
+	      <p style="margin-bottom:12px;">根据用户勾选的需求类型（找室友 / 求租 / 出租 / 转租），自由文本输入框的引导文案动态切换——找室友引导描述生活习惯，求租引导描述房子期望，让 AI 从第一步就聚焦在正确的维度上。</p>
+	      <p style="font-weight:600;color:var(--text);margin-bottom:8px;">2. 智能追问</p>
+	      <p style="margin-bottom:12px;">AI 通读用户原文，识别模糊表述和缺失维度，生成关联用户原话的场景化追问——具象化（「运动」→ 什么类型？）、场景化（「晚睡」→ 对噪音容忍度？）、画像补充（缺清洁习惯 → 追问清洁标准）、MBTI 补充（16 种类型供选择）。</p>
+	      <p style="font-weight:600;color:var(--text);margin-bottom:8px;">3. 标签生成</p>
+	      <p style="margin-bottom:12px;">从用户原文和追问回答中提取结构化标签——性格、爱好、生活习惯、室友期望、求租偏好、房源特征。每个标签标注来源（原文/追问）和置信度，用户确认后入库。</p>
+	      <p style="font-weight:600;color:var(--text);margin-bottom:8px;">4. 个人简介生成</p>
+	      <p>基于用户原文和确认标签，生成自然、真实、有温度的个人简介——不编造事实，保持用户语言风格，根据需求类型自动选择收尾语气。</p>
+	    </div>
 
     <div class="explanation-card">
       <h3><span class="icon icon-data">📊</span> 数据沉淀与下游应用</h3>
@@ -927,11 +976,7 @@ body {
           <div class="value">🎯 精准筛选</div>
         </div>
       </div>
-      <p style="margin-top:12px; font-size:0.84rem;">
-        每个标签带 <span class="highlight">source</span>（来源：原文/追问/规则）和 <span class="highlight">confidence</span>（置信度），
-        下游匹配算法可据此进行加权排序。标签体系外置为独立 YAML 配置，新增维度只需改一个文件。
-        一期中文，二期扩展英文 + 五行。
-      </p>
+      
     </div>
   </div>
 
@@ -978,10 +1023,9 @@ const state = {
 };
 
 const demandOptions = [
+  { value:'find_roommate', label:'找室友', icon:'🤝' },
   { value:'list', label:'我要出租', icon:'🏠' },
   { value:'transfer', label:'我要转租', icon:'🔄' },
-  { value:'find_roommate_existing', label:'找室友 - 已有房', icon:'🤝' },
-  { value:'find_roommate_searching', label:'找室友 - 还没房', icon:'🤝' },
   { value:'none', label:'暂无需求，逛逛社区', icon:'👀' }
 ];
 
@@ -1082,11 +1126,19 @@ function initCombobox(cfg){
   }
 }
 
+function buildFullText(){
+  let t=state.freeText;
+  state.questionHistory.forEach(q=>{
+    if(q.answer&&q.answer!=='跳过')t+='\n[追问回答] '+q.question_text+' → '+q.answer;
+  });
+  return t;
+}
+
 function getPlaceholder(demandTypes) {
   if(!demandTypes.length||demandTypes.includes('none')) return '介绍你自己——你的性格、爱好、生活方式…';
   const p=['介绍你自己'];
   const hr=demandTypes.some(t=>t.includes('roommate'));
-  const rent=demandTypes.some(t=>t==='find_roommate_searching'||t==='rent');
+  const rent=demandTypes.some(t=>t==='find_roommate'||t==='rent');
   const list=demandTypes.some(t=>t==='list'||t==='transfer');
   if(hr)p.push('你理想的室友是什么样的——作息、生活习惯');
   if(list&&demandTypes.includes('transfer'))p.push('为什么转租、房子怎么样');
@@ -1140,7 +1192,7 @@ function simulateBio(text, confirmedTags, demandTypes) {
   const hobbies=all.filter(l=>['跑步','健身','烹饪','阅读','看电影','音乐','旅行','游戏'].includes(l));
   const lifestyle=all.filter(l=>['不吸烟','早睡型','晚睡型','正常作息','养宠物','宅家型'].includes(l));
   const hasRoommate=demandTypes.some(t=>t.includes('roommate'));
-  const hasRent=demandTypes.some(t=>t.includes('find_roommate_searching'));
+  const hasRent=demandTypes.some(t=>t.includes('find_roommate'));
   const parts=[];
   const who=[];if(text.includes('设计师'))who.push('做设计的');else if(text.includes('学生')||text.includes('大学'))who.push('在读学生');else if(text.match(/工作|上班/))who.push('上班族');
   if(text.includes('上海'))who.push('在上海');else if(text.includes('北京'))who.push('在北京');
@@ -1191,7 +1243,7 @@ function renderStep1() {
   for(let i=0;i<MAX_PHOTOS;i++){
     const p=state.photos[i];
     if(p){
-      photoSlots.push(`<div class="photo-slot filled${i===0?' cover-badge':''}" data-idx="${i}" draggable="true" style="background-image:url(${p.dataUrl})"><button class="photo-remove" data-idx="${i}">&times;</button></div>`);
+      photoSlots.push(`<div class="photo-slot filled${i===0?' cover-badge':''}" data-idx="${i}" draggable="true" style="background:url(${p.dataUrl}) center/cover"><button class="photo-remove" data-idx="${i}">&times;</button></div>`);
     }else{
       photoSlots.push(`<div class="photo-slot" data-idx="${i}">+</div>`);
     }
@@ -1233,7 +1285,6 @@ function renderStep1() {
           <div class="combobox-dropdown"></div>
         </div>
         <div class="combobox-chips" id="langChips">${state.basicFields.languages.map(l=>`<span class="combobox-chip">${escHTML(l)}<button class="chip-x" data-lang="${escHTML(l)}">×</button></span>`).join('')}</div>
-        <span class="form-hint">输入后回车或点击下拉选项添加</span>
       </div>
       <div class="form-group"><label>我当前的需求（可多选）</label><div class="demand-chips" id="demandChips">${dChips}</div></div>
       <button class="btn btn-primary" id="btnFormNext">保存，下一步 →</button>
@@ -1252,7 +1303,7 @@ function renderStep1() {
       slot.className='photo-slot'+(p?' filled'+(i===0?' cover-badge':''):'');
       slot.dataset.idx=i;
       if(p){
-        slot.style.backgroundImage=`url(${p.dataUrl})`;
+        slot.style.background=`url(${p.dataUrl}) center/cover`;
         slot.draggable=true;
         const rm=document.createElement('button');rm.className='photo-remove';rm.textContent='×';
         rm.addEventListener('click',e=>{e.stopPropagation();state.photos.splice(i,1);refreshPhotoGrid();});
@@ -1335,15 +1386,53 @@ function renderStep2() {
   const ph=getPlaceholder(state.basicFields.demand_types);
   content.innerHTML=`
     <div class="fade-in">
-      <div class="step-intro"><span class="step-intro-icon">✍️</span><div class="step-intro-title">用一段话介绍你自己</div><div class="step-intro-desc">AI 会在你写完后帮你挖掘亮点、补充盲区</div></div>
+      <div class="step-intro"><span class="step-intro-icon">✍️</span><div class="step-intro-title">请介绍下你并说出你的具体需求</div><div class="step-intro-desc">文字输入或语音说出，AI 帮你挖掘亮点、补充盲区</div></div>
       <textarea class="form-textarea" id="freeText" placeholder="${ph}" maxlength="2000">${escHTML(state.freeText)}</textarea>
       <span class="form-hint" id="charCount">${state.freeText.length}/2000 · 至少输入 10 个字即可触发 AI</span>
-      <button class="btn btn-primary" id="btnAnalyze"${state.freeText.length>=10?'':' disabled'}>✨ AI 帮我看看</button>
+      <div style="display:flex;gap:10px;"><button class="btn btn-secondary" id="btnVoice" style="flex:0 0 auto;" title="语音输入">🎤 语音输入</button><button class="btn btn-primary" id="btnAnalyze" style="flex:1;margin-top:0;"${state.freeText.length>=10?'':' disabled'}>✨ AI 帮我看看</button></div>
     </div>`;
   const ta=document.getElementById('freeText'),cc=document.getElementById('charCount'),ba=document.getElementById('btnAnalyze');
   ta.addEventListener('input',()=>{const l=ta.value.length;cc.textContent=l+'/2000 · 至少输入 10 个字即可触发 AI';ba.disabled=l<10;});
-  ba.addEventListener('click',()=>{state.freeText=ta.value;state.loading=true;state.step=3;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在分析你的自我介绍…</p><p class="ai-thinking-sub">识别关键标签 · 发现可深化的话题</p></div>`;
-    setTimeout(()=>{const r=simulateAnalyze(state.freeText,state.basicFields.demand_types,state.questionHistory);state.tags=r.tags;state.questions=r.questions;state.answeredQuestionIds=new Set();state.loading=false;if(!state.questions.length||state.skipAllCount>=3){state.step=4;render(4);}else render(3);},1500);});
+	  // Voice recording - simple MediaRecorder to backend Paraformer
+	  const btnVoice=document.getElementById('btnVoice');
+	  let mediaRecorder=null,audioChunks=[];
+	  btnVoice.addEventListener('click',async ()=>{
+	    if(mediaRecorder&&mediaRecorder.state==='recording'){
+	      mediaRecorder.stop();btnVoice.textContent='⏳ 识别中...';btnVoice.style.background='';btnVoice.style.color='';
+	    }else{
+	      try{
+	        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+	        mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm'});
+	        audioChunks=[];
+	        mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+	        mediaRecorder.onstop=async ()=>{
+	          stream.getTracks().forEach(t=>t.stop());
+	          const blob=new Blob(audioChunks,{type:'audio/webm'});
+	          const form=new FormData();form.append('audio',blob,'recording.webm');
+	          try{
+	            const resp=await fetch('http://localhost:9000/api/profile/ai/transcribe',{method:'POST',body:form});
+	            const r=await resp.json();
+	            if(resp.ok&&r.text){
+	              ta.value=(state.freeText?state.freeText+' ':'')+r.text;
+	              ta.dispatchEvent(new Event('input'));
+	            }else{throw new Error(r.detail||'识别失败');}
+	          }catch(e){alert('语音识别失败：'+e.message);}
+	          btnVoice.textContent='🎤 语音输入';btnVoice.style.background='';btnVoice.style.color='';
+	        };
+	        mediaRecorder.start();
+	        btnVoice.textContent='🔴 停止录音';btnVoice.style.background='var(--accent-warm-light)';btnVoice.style.color='var(--accent-warm)';
+	      }catch(e){alert('无法访问麦克风：'+e.message);}
+	    }
+	  });
+  ba.addEventListener('click',async ()=>{state.freeText=ta.value;state.loading=true;state.step=3;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在分析你的自我介绍…</p><p class="ai-thinking-sub">识别关键标签 · 发现可深化的话题</p></div>`;
+    (async ()=>{
+    try{
+      const resp=await fetch('http://localhost:9000/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:state.freeText,demand_types:state.basicFields.demand_types,question_history:state.questionHistory,draft_tags:{},dimension_gaps:[]})});
+      const r=await resp.json();
+      if(resp.ok){state.tags=r.tags;state.questions=r.questions;state.answeredQuestionIds=new Set();state.loading=false;if(!state.questions.length||state.skipAllCount>=3){state.step=4;render(4);}else render(3);}
+      else throw new Error(r.detail||'API error');
+    }catch(e){alert('AI \u5206\u6790\u5931\u8d25\uff1a'+e.message);state.loading=false;state.step=2;render(2);}
+  })()});
 }
 
 // ─── Step 3 ───
@@ -1351,21 +1440,39 @@ function renderStep3() {
   phoneTitle.textContent='AI 追问';
   if(state.skipAllCount>=3){state.step=4;render(4);return;}
   const unanswered=state.questions.filter(q=>!state.answeredQuestionIds.has(q.id));
-  if(!unanswered.length){state.step=4;render(4);return;}
+  if(!unanswered.length){doFinalAnalyze();return;}
   const q=unanswered[0];
   content.innerHTML=`
     <div class="fade-in">
       <div class="question-header"><span class="q-badge">${state.answeredQuestionIds.size+1}/${state.questions.length}</span> AI 发现可优化的地方</div>
       <div class="question-bubble">
         <p class="q-text">${q.text}</p>
-        <div class="question-options">${q.options.map(o=>`<button class="option-chip" data-answer="${escHTML(o.tag||o.label)}">${o.label}</button>`).join('')}</div>
+        ${q.options.length===16 ? `<div class="mbti-grid">${q.options.map(o=>`<button class="mbti-cell" data-answer="${escHTML(o.tag||o.label)}">${escHTML(o.label)}</button>`).join('')}</div>` : `<div class="question-options">${q.options.map(o=>`<button class="option-chip${(o.label.includes('✏️')||o.label.includes('其他'))?' option-other':''}" data-answer="${escHTML(o.tag||o.label)}">${o.label}</button>`).join('')}<div class="inline-other-row" style="display:none"><input id="otherInput" placeholder="请输入..."><button id="btnOtherConfirm">确认</button></div></div>`}
         <button class="q-skip" id="btnSkipOne">─ 不感兴趣，跳过 →</button>
       </div>
       <div class="skip-banner"><button id="btnSkipAll">🙈 全部跳过，直接查看标签</button></div>
     </div>`;
-  document.querySelectorAll('.option-chip').forEach(chip=>{chip.addEventListener('click',()=>{const a=chip.dataset.answer;state.questionHistory.push({question_id:q.id,question_text:q.text,answer:a});state.answeredQuestionIds.add(q.id);render(3);});});
+  // MBTI cell click handler
+  document.querySelectorAll('.mbti-cell').forEach(cell=>{cell.addEventListener('click',()=>{state.questionHistory.push({question_id:q.id,question_text:q.text,answer:cell.dataset.answer});state.answeredQuestionIds.add(q.id);render(3);});});
+  // Option chip click handler
+  document.querySelectorAll('.option-chip').forEach(chip=>{chip.addEventListener('click',()=>{const a=chip.dataset.answer;if(chip.classList.contains('option-other')){const row=chip.parentElement.querySelector('.inline-other-row');if(row){row.style.display='flex';row.querySelector('input').focus();}}else{state.questionHistory.push({question_id:q.id,question_text:q.text,answer:a});state.answeredQuestionIds.add(q.id);render(3);}});});
+  // Inline other confirm button
+  const btnOther=document.getElementById('btnOtherConfirm');if(btnOther)btnOther.addEventListener('click',()=>{const val=document.getElementById('otherInput').value;if(!val.trim())return;state.questionHistory.push({question_id:q.id,question_text:q.text,answer:val.trim()});state.answeredQuestionIds.add(q.id);render(3);});
   document.getElementById('btnSkipOne').addEventListener('click',()=>{state.answeredQuestionIds.add(q.id);state.questionHistory.push({question_id:q.id,question_text:q.text,answer:'跳过'});render(3);});
   document.getElementById('btnSkipAll').addEventListener('click',()=>{state.skipAllCount++;state.questions.forEach(qq=>{if(!state.answeredQuestionIds.has(qq.id)){state.answeredQuestionIds.add(qq.id);state.questionHistory.push({question_id:qq.id,question_text:qq.text,answer:'跳过'});}});state.step=4;render(4);});
+}
+
+// ─── Final analyze with question answers ───
+async function doFinalAnalyze(){
+  state.loading=true;state.step=3;
+  content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在融合你的追问回答…</p><p class="ai-thinking-sub">更新标签 · 提炼更精准的画像</p></div>`;
+  try{
+    const resp=await fetch('http://localhost:9000/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:state.freeText,demand_types:state.basicFields.demand_types,question_history:state.questionHistory,draft_tags:{},dimension_gaps:[]})});
+    const r=await resp.json();
+    if(resp.ok){
+      state.tags=r.tags;state.questions=[];state.loading=false;state.step=4;render(4);
+    }else throw new Error(r.detail||'API error');
+  }catch(e){alert('AI 分析失败：'+e.message);state.loading=false;state.step=4;render(4);}
 }
 
 // ─── Step 4 ───
@@ -1374,7 +1481,7 @@ function renderStep4() {
   const catIcons={personality:'🧠',hobby:'🎯',lifestyle:'🏠',roommate_expectation:'🤝',rental_preference:'🔍',listing_feature:'🏡',transfer_reason:'📋'};
   const catLabels={personality:'性格标签',hobby:'爱好标签',lifestyle:'生活习惯',roommate_expectation:'室友期望',rental_preference:'求租偏好',listing_feature:'房源特征',transfer_reason:'转租原因'};
   const hasRoommate=state.basicFields.demand_types.some(t=>t.includes('roommate'));
-  const hasRent=state.basicFields.demand_types.some(t=>t.includes('find_roommate_searching'));
+  const hasRent=state.basicFields.demand_types.some(t=>t.includes('find_roommate'));
   const hasList=state.basicFields.demand_types.some(t=>t==='list'||t==='transfer');
   const relevant=['personality','hobby','lifestyle'];
   if(hasRoommate)relevant.push('roommate_expectation');if(hasRent)relevant.push('rental_preference');if(hasList)relevant.push('listing_feature');if(state.basicFields.demand_types.includes('transfer'))relevant.push('transfer_reason');
@@ -1385,21 +1492,46 @@ function renderStep4() {
       <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px;"><span class="tag-total">${total}</span><span style="font-size:0.84rem;color:var(--text-secondary);font-weight:600;">个标签已识别</span></div>
       <p class="tag-subtitle">标签来自你的原文和追问回答，确认后可修改。<span class="tag-chip tag-source-qa" style="display:inline-flex;vertical-align:middle;font-size:0.68rem;">追问得来💬</span></p>
       ${secs}
-      <div style="display:flex;gap:10px;margin-top:22px;"><button class="btn btn-secondary" id="btnReanalyze" style="flex:1;">🔄 继续追问</button><button class="btn btn-primary" id="btnConfirmTags" style="flex:1;margin-top:0;">确认，生成简介 →</button></div>
+      <div class="inline-other-row" id="tagAddRow" style="display:none;margin-bottom:12px;"><input id="tagAddInput" placeholder="输入新标签名称..."><button id="btnTagAddConfirm">添加</button></div>
+      <button class="btn btn-primary" id="btnConfirmTags">确认，生成简介 →</button>
     </div>`;
   document.querySelectorAll('.tag-remove').forEach(b=>b.addEventListener('click',()=>{const cat=b.dataset.cat,idx=parseInt(b.dataset.idx);state.tags[cat].splice(idx,1);render(4);}));
-  document.querySelectorAll('.tag-add').forEach(b=>b.addEventListener('click',()=>{const cat=b.dataset.cat;const label=prompt(`为「${catLabels[cat]||cat}」添加标签：`);if(label&&label.trim()){if(!state.tags[cat])state.tags[cat]=[];state.tags[cat].push({label:label.trim(),source:'free_text',confidence:1.0});render(4);}}));
-  document.getElementById('btnReanalyze').addEventListener('click',()=>{state.step=2;render(2);});
+  document.querySelectorAll('.tag-add').forEach(b=>{b.addEventListener('click',()=>{const cat=b.dataset.cat;const row=document.getElementById('tagAddRow');if(row){row.style.display='flex';row.querySelector('input').value='';row.querySelector('input').dataset.cat=cat;row.querySelector('input').focus();}});});
+  const btnTagAdd=document.getElementById('btnTagAddConfirm');if(btnTagAdd)btnTagAdd.addEventListener('click',()=>{const inp=document.getElementById('tagAddInput');const cat=inp.dataset.cat;const val=inp.value.trim();if(!val||!cat)return;if(!state.tags[cat])state.tags[cat]=[];state.tags[cat].push({label:val,source:'free_text',confidence:1.0});document.getElementById('tagAddRow').style.display='none';render(4);});
   document.getElementById('btnConfirmTags').addEventListener('click',()=>{state.loading=true;state.step=5;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在为你生成个人简介…</p><p class="ai-thinking-sub">基于你的原文和确认标签，组织自然流畅的表达</p></div>`;
-    setTimeout(()=>{const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});const r=simulateBio(state.freeText,ct,state.basicFields.demand_types);state.bio=r.bio;state.loading=false;render(5);},1800);});
+    (async ()=>{
+    try{
+      const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});
+      const resp=await fetch('http://localhost:9000/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:buildFullText(),confirmed_tags:ct,demand_types:state.basicFields.demand_types})});
+      const r=await resp.json();
+      if(resp.ok){state.bio=r.bio;state.loading=false;render(5);}
+      else throw new Error(r.detail||'API error');
+    }catch(e){alert('\u7b80\u4ecb\u751f\u6210\u5931\u8d25\uff1a'+e.message);state.loading=false;state.step=4;render(4);}
+  })()});
 }
 
 // ─── Step 5 ───
 function renderStep5() {
   phoneTitle.textContent='个人简介';
+  // Build photo preview for profile
+  let photoHTML='';
+  if(state.photos.length>0){
+    const cover=state.photos[0];
+    const rest=state.photos.slice(1);
+    photoHTML=`
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:18px;">
+        <div style="width:80px;height:80px;border-radius:14px;background:url(${cover.dataUrl}) center/cover;border:2px solid var(--primary);flex-shrink:0;box-shadow:0 2px 8px var(--primary-glow);"></div>
+        <div style="flex:1;">
+          <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:4px;">${escHTML(state.basicFields.nickname||'你的昵称')}</div>
+          <div style="font-size:0.74rem;color:var(--text-muted);">${escHTML(state.basicFields.occupation||'职业')}${state.basicFields.region?' · '+escHTML(state.basicFields.region):''}</div>
+          ${rest.length>0?`<div style="display:flex;gap:6px;margin-top:8px;">${rest.map(p=>`<div style="width:36px;height:36px;border-radius:8px;background:url(${p.dataUrl}) center/cover;border:1px solid var(--border);"></div>`).join('')}</div>`:''}
+        </div>
+      </div>`;
+  }
   content.innerHTML=`
     <div class="fade-in">
-      <div class="step-intro"><span class="step-intro-icon">📝</span><div class="step-intro-title">AI 为你生成的个人简介</div><div class="step-intro-desc">基于你的原文和确认标签，可直接修改</div></div>
+      ${photoHTML}
+	      <div class="step-intro"><span class="step-intro-icon">📝</span><div class="step-intro-title">AI 为你生成的个人简介</div><div class="step-intro-desc">基于你的原文和确认标签，可直接修改</div></div>
       <div class="bio-card"><p class="bio-text" id="bioText">${escHTML(state.bio)}</p></div>
       <textarea class="form-textarea" id="bioEdit" style="min-height:80px;margin-bottom:14px;">${escHTML(state.bio)}</textarea>
       <span class="form-hint">你可以直接修改简介，200 字以内</span>
@@ -1407,7 +1539,15 @@ function renderStep5() {
       <button class="btn btn-primary" id="btnSave">✅ 保存资料</button>
     </div>`;
   document.getElementById('btnCopy').addEventListener('click',()=>{navigator.clipboard.writeText(document.getElementById('bioEdit').value);const b=document.getElementById('btnCopy');b.textContent='✅ 已复制';setTimeout(()=>{b.textContent='📋 复制';},2000);});
-  document.getElementById('btnRegenerate').addEventListener('click',()=>{state.loading=true;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">重新生成中…</p></div>`;setTimeout(()=>{const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});const r=simulateBio(state.freeText,ct,state.basicFields.demand_types);state.bio=r.bio;state.loading=false;render(5);},1200);});
+  document.getElementById('btnRegenerate').addEventListener('click',()=>{state.loading=true;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">重新生成中…</p></div>`;(async ()=>{
+    try{
+      const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});
+      const resp=await fetch('http://localhost:9000/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:buildFullText(),confirmed_tags:ct,demand_types:state.basicFields.demand_types})});
+      const r=await resp.json();
+      if(resp.ok){state.bio=r.bio;state.loading=false;render(5);}
+      else throw new Error(r.detail||'API error');
+    }catch(e){alert('\u91cd\u65b0\u751f\u6210\u5931\u8d25\uff1a'+e.message);state.loading=false;state.step=4;render(4);}
+  })()});
   document.getElementById('btnSave').addEventListener('click',()=>{state.bio=document.getElementById('bioEdit').value;state.step=6;render(6);});
 }
 
