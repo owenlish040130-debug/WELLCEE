@@ -1022,6 +1022,33 @@ function changeAPI(){
   if(url){localStorage.setItem('wellcee_api_base',url);location.reload();}
 }
 
+let useSimulated=false;  // 后端不可用时自动切换模拟 AI
+
+async function callAnalyzeAPI(freeText,demandTypes,questionHistory){
+  if(!useSimulated){
+    try{
+      const resp=await fetch(API_BASE+'/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:freeText,demand_types:demandTypes,question_history:questionHistory,draft_tags:{},dimension_gaps:[]})});
+      const r=await resp.json();
+      if(resp.ok)return r;
+    }catch(e){useSimulated=true;console.log('切换离线模式');}
+  }
+  return simulateAnalyze(freeText,demandTypes,questionHistory);
+}
+
+async function callBioAPI(freeText,confirmedTags,demandTypes){
+  if(!useSimulated){
+    try{
+      const resp=await fetch(API_BASE+'/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:freeText,confirmed_tags:confirmedTags,demand_types:demandTypes})});
+      const r=await resp.json();
+      if(resp.ok)return r;
+    }catch(e){useSimulated=true;}
+  }
+  const ct={};Object.entries(confirmedTags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});
+  return simulateBio(freeText,ct,demandTypes);
+}
+
+function offlineBadge(){return useSimulated?' <span style="font-size:0.7rem;background:#f0a26e22;color:#f0a26e;padding:2px 8px;border-radius:10px;">离线模式</span>':'';}
+
 const state = {
   step: 1,
   basicFields: { avatar_url:'', nickname:'', age:'', occupation:'', region:'', languages:['中文'], demand_types:[] },
@@ -1435,10 +1462,8 @@ function renderStep2() {
   ba.addEventListener('click',async ()=>{state.freeText=ta.value;state.loading=true;state.step=3;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在分析你的自我介绍…</p><p class="ai-thinking-sub">识别关键标签 · 发现可深化的话题</p></div>`;
     (async ()=>{
     try{
-      const resp=await fetch(API_BASE + '/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:state.freeText,demand_types:state.basicFields.demand_types,question_history:state.questionHistory,draft_tags:{},dimension_gaps:[]})});
-      const r=await resp.json();
-      if(resp.ok){state.tags=r.tags;state.questions=r.questions;state.answeredQuestionIds=new Set();state.loading=false;if(!state.questions.length||state.skipAllCount>=3){state.step=4;render(4);}else render(3);}
-      else throw new Error(r.detail||'API error');
+      const r=await callAnalyzeAPI(state.freeText,state.basicFields.demand_types,state.questionHistory);
+      state.tags=r.tags;state.questions=r.questions;state.answeredQuestionIds=new Set();state.loading=false;if(!state.questions.length||state.skipAllCount>=3){state.step=4;render(4);}else render(3);
     }catch(e){alert('AI \u5206\u6790\u5931\u8d25\uff1a'+e.message);state.loading=false;state.step=2;render(2);}
   })()});
 }
@@ -1475,11 +1500,8 @@ async function doFinalAnalyze(){
   state.loading=true;state.step=3;
   content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在融合你的追问回答…</p><p class="ai-thinking-sub">更新标签 · 提炼更精准的画像</p></div>`;
   try{
-    const resp=await fetch(API_BASE + '/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:state.freeText,demand_types:state.basicFields.demand_types,question_history:state.questionHistory,draft_tags:{},dimension_gaps:[]})});
-    const r=await resp.json();
-    if(resp.ok){
-      state.tags=r.tags;state.questions=[];state.loading=false;state.step=4;render(4);
-    }else throw new Error(r.detail||'API error');
+    const r=await callAnalyzeAPI(state.freeText,state.basicFields.demand_types,state.questionHistory);
+    state.tags=r.tags;state.questions=[];state.loading=false;state.step=4;render(4);
   }catch(e){alert('AI 分析失败：'+e.message);state.loading=false;state.step=4;render(4);}
 }
 
@@ -1510,10 +1532,8 @@ function renderStep4() {
     (async ()=>{
     try{
       const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});
-      const resp=await fetch(API_BASE + '/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:buildFullText(),confirmed_tags:ct,demand_types:state.basicFields.demand_types})});
-      const r=await resp.json();
-      if(resp.ok){state.bio=r.bio;state.loading=false;render(5);}
-      else throw new Error(r.detail||'API error');
+      const r=await callBioAPI(buildFullText(),ct,state.basicFields.demand_types);
+      state.bio=r.bio;state.loading=false;render(5);
     }catch(e){alert('\u7b80\u4ecb\u751f\u6210\u5931\u8d25\uff1a'+e.message);state.loading=false;state.step=4;render(4);}
   })()});
 }
@@ -1550,10 +1570,8 @@ function renderStep5() {
   document.getElementById('btnRegenerate').addEventListener('click',()=>{state.loading=true;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">重新生成中…</p></div>`;(async ()=>{
     try{
       const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});
-      const resp=await fetch(API_BASE + '/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:buildFullText(),confirmed_tags:ct,demand_types:state.basicFields.demand_types})});
-      const r=await resp.json();
-      if(resp.ok){state.bio=r.bio;state.loading=false;render(5);}
-      else throw new Error(r.detail||'API error');
+      const r=await callBioAPI(buildFullText(),ct,state.basicFields.demand_types);
+      state.bio=r.bio;state.loading=false;render(5);
     }catch(e){alert('\u91cd\u65b0\u751f\u6210\u5931\u8d25\uff1a'+e.message);state.loading=false;state.step=4;render(4);}
   })()});
   document.getElementById('btnSave').addEventListener('click',()=>{state.bio=document.getElementById('bioEdit').value;state.step=6;render(6);});
