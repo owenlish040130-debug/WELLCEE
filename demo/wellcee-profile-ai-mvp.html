@@ -915,7 +915,7 @@ body {
 <!-- Header -->
 <header class="header">
   <div class="logo">Well<span>cee</span> 唯心所寓</div>
-  <div class="subtitle">个人资料 AI 增强完善流程 · MVP</div>
+  <div class="subtitle">个人资料 AI 增强完善流程 · MVP · <a href="#" onclick="changeAPI()" style="color:var(--primary);text-decoration:underline;">切换后端</a></div>
 </header>
 
 <div class="main-container">
@@ -1013,6 +1013,14 @@ body {
 // ─── Preset data ───
 const REGION_PRESETS = ['北京','上海','广州','深圳','杭州','成都','武汉','南京','西安','重庆','苏州','长沙','香港','天津','郑州','东莞','厦门','青岛','合肥','大连','沈阳','昆明','福州','宁波','无锡','济南','佛山','珠海','台北','澳门','海外-美国','海外-英国','海外-澳大利亚','海外-日本','海外-韩国','海外-新加坡','海外-德国','海外-法国','海外-加拿大','海外-其他'];
 const LANGUAGE_PRESETS = ['中文','English','日本語','한국어','Français','Deutsch','Español','Italiano','Português','Русский','العربية','हिन्दी','ไทย','Tiếng Việt','Bahasa Indonesia','Tagalog','Nederlands','Svenska','Türkçe'];
+
+// 后端 API 地址：本地开发用 localhost:9000，部署后改为 Railway 地址
+const API_BASE = localStorage.getItem('wellcee_api_base') || 'http://localhost:9000';
+
+function changeAPI(){
+  const url=prompt('后端 API 地址：','http://localhost:9000');
+  if(url){localStorage.setItem('wellcee_api_base',url);location.reload();}
+}
 
 const state = {
   step: 1,
@@ -1410,7 +1418,7 @@ function renderStep2() {
 	          const blob=new Blob(audioChunks,{type:'audio/webm'});
 	          const form=new FormData();form.append('audio',blob,'recording.webm');
 	          try{
-	            const resp=await fetch('http://localhost:9000/api/profile/ai/transcribe',{method:'POST',body:form});
+	            const resp=await fetch(API_BASE + '/api/profile/ai/transcribe',{method:'POST',body:form});
 	            const r=await resp.json();
 	            if(resp.ok&&r.text){
 	              ta.value=(state.freeText?state.freeText+' ':'')+r.text;
@@ -1427,7 +1435,7 @@ function renderStep2() {
   ba.addEventListener('click',async ()=>{state.freeText=ta.value;state.loading=true;state.step=3;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在分析你的自我介绍…</p><p class="ai-thinking-sub">识别关键标签 · 发现可深化的话题</p></div>`;
     (async ()=>{
     try{
-      const resp=await fetch('http://localhost:9000/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:state.freeText,demand_types:state.basicFields.demand_types,question_history:state.questionHistory,draft_tags:{},dimension_gaps:[]})});
+      const resp=await fetch(API_BASE + '/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:state.freeText,demand_types:state.basicFields.demand_types,question_history:state.questionHistory,draft_tags:{},dimension_gaps:[]})});
       const r=await resp.json();
       if(resp.ok){state.tags=r.tags;state.questions=r.questions;state.answeredQuestionIds=new Set();state.loading=false;if(!state.questions.length||state.skipAllCount>=3){state.step=4;render(4);}else render(3);}
       else throw new Error(r.detail||'API error');
@@ -1467,7 +1475,7 @@ async function doFinalAnalyze(){
   state.loading=true;state.step=3;
   content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">AI 正在融合你的追问回答…</p><p class="ai-thinking-sub">更新标签 · 提炼更精准的画像</p></div>`;
   try{
-    const resp=await fetch('http://localhost:9000/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:state.freeText,demand_types:state.basicFields.demand_types,question_history:state.questionHistory,draft_tags:{},dimension_gaps:[]})});
+    const resp=await fetch(API_BASE + '/api/profile/ai/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:state.freeText,demand_types:state.basicFields.demand_types,question_history:state.questionHistory,draft_tags:{},dimension_gaps:[]})});
     const r=await resp.json();
     if(resp.ok){
       state.tags=r.tags;state.questions=[];state.loading=false;state.step=4;render(4);
@@ -1502,7 +1510,7 @@ function renderStep4() {
     (async ()=>{
     try{
       const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});
-      const resp=await fetch('http://localhost:9000/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:buildFullText(),confirmed_tags:ct,demand_types:state.basicFields.demand_types})});
+      const resp=await fetch(API_BASE + '/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:buildFullText(),confirmed_tags:ct,demand_types:state.basicFields.demand_types})});
       const r=await resp.json();
       if(resp.ok){state.bio=r.bio;state.loading=false;render(5);}
       else throw new Error(r.detail||'API error');
@@ -1542,7 +1550,7 @@ function renderStep5() {
   document.getElementById('btnRegenerate').addEventListener('click',()=>{state.loading=true;content.innerHTML=`<div class="ai-thinking-wrap fade-in"><div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><p class="ai-thinking-text">重新生成中…</p></div>`;(async ()=>{
     try{
       const ct={};Object.entries(state.tags).forEach(([cat,tl])=>{ct[cat]=tl.map(t=>t.label);});
-      const resp=await fetch('http://localhost:9000/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:buildFullText(),confirmed_tags:ct,demand_types:state.basicFields.demand_types})});
+      const resp=await fetch(API_BASE + '/api/profile/ai/bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({free_text:buildFullText(),confirmed_tags:ct,demand_types:state.basicFields.demand_types})});
       const r=await resp.json();
       if(resp.ok){state.bio=r.bio;state.loading=false;render(5);}
       else throw new Error(r.detail||'API error');
