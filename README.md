@@ -1,26 +1,12 @@
 # Wellcee（唯心所寓）— 个人资料 AI 增强完善流程
 
-基于 LLM 的租房平台个人资料完善系统。用户在固定表单后自由输入自我介绍，AI 主动追问、提取标签、生成个人简介。
+通过 AI 大模型让用户更便捷地完善个人资料，同时提升资料完整度和个性化表达。用户在固定表单后自由输入自我介绍（文字或语音），AI 智能追问、提取结构化标签、生成个人简介。
 
-## 架构
+## Demo
 
-```
-用户自由文本
-    ↓
-规则引擎（关键词精确匹配，0 Token）
-    ↓ 草稿标签 + 维度缺口
-Qwen-Plus（LLM 看全文，确认/补充标签 + 生成追问）
-    ↓ 用户确认标签
-DeepSeek-V3（基于原文+标签生成自然简介）
-    ↓
-保存到数据库（SQLite / PostgreSQL）
-```
+👉 下载 `demo/wellcee-profile-ai-mvp.html`，浏览器直接打开即可体验交互流程。
 
-## 技术栈
-
-- **后端**：Python 3.11+, FastAPI, SQLAlchemy (async), Pydantic v2
-- **AI**：Qwen-Plus + DeepSeek-V3（主线），GLM-4-Air / Flash（降级链）
-- **数据库**：SQLite（本地开发），PostgreSQL（生产）
+> Demo 需要连接后端 API。本地启动后端后点击页面顶部「切换后端」输入地址；如果没有后端，Demo 仅展示界面流程。
 
 ## 快速开始
 
@@ -28,8 +14,6 @@ DeepSeek-V3（基于原文+标签生成自然简介）
 
 ```bash
 cd backend
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -37,34 +21,35 @@ pip install -r requirements.txt
 
 ```bash
 cp .env.example .env
-# 编辑 .env，填入至少一个 LLM 厂商的 API Key
 ```
 
-### 3. 启动服务
+编辑 `.env`，填入：
+
+| 变量 | 说明 | 获取方式 |
+|------|------|---------|
+| `DEEPSEEK_API_KEY` | 必填，AI 追问+标签+简介 | platform.deepseek.com 注册 |
+| `DASHSCOPE_API_KEY` | 选填，语音识别（阿里云免费36,000次） | dashscope.aliyun.com 注册 |
+
+### 3. 启动
 
 ```bash
-uvicorn app.main:app --reload
-# → http://localhost:8000
-# → http://localhost:8000/docs  (Swagger UI)
+python -m uvicorn app.main:app --port 9000
+# → http://localhost:9000
+# → http://localhost:9000/docs  (Swagger)
 ```
 
-### 4. 测试
+### 4. 打开 Demo
 
-```bash
-# 健康检查
-curl http://localhost:8000/health
+浏览器打开 `demo/wellcee-profile-ai-mvp.html`，默认连 `localhost:9000`。
 
-# 获取标签体系
-curl http://localhost:8000/api/profile/tags/taxonomy
+## AI 如何参与流程
 
-# AI 分析（需要 API Key）
-curl -X POST http://localhost:8000/api/profile/ai/analyze \
-  -H "Content-Type: application/json" \
-  -d '{
-    "free_text": "我在上海做设计，喜欢安静地跑步和做饭，不吸烟",
-    "demand_types": ["find_roommate"]
-  }'
-```
+| 环节 | 说明 |
+|------|------|
+| **智能引导** | 根据用户勾选的需求类型（找室友/求租/出租/转租），自由文本输入框引导文案动态切换 |
+| **智能追问** | LLM 通读用户原文，识别模糊表述和缺失维度，生成引用用户原话的场景化追问；MBTI 未提及时展示全部 16 种类型供选择 |
+| **标签生成** | 从原文和追问回答中提取结构化标签（性格/爱好/生活习惯/室友期望/求租偏好/房源特征），标注来源和置信度 |
+| **简介生成** | 基于原文+确认标签，生成自然真实的个人简介（不编造事实） |
 
 ## API 端点
 
@@ -72,48 +57,58 @@ curl -X POST http://localhost:8000/api/profile/ai/analyze \
 |------|------|------|
 | POST | `/api/profile/ai/analyze` | 追问生成 + 标签提取 |
 | POST | `/api/profile/ai/bio` | 个人简介生成 |
+| POST | `/api/profile/ai/transcribe` | 语音转文字 |
 | GET | `/api/profile/tags/taxonomy` | 标签体系获取 |
 | PUT | `/api/profile/fields` | 保存最终资料 |
 | GET | `/health` | 健康检查 |
 
-## 降级策略
+## 架构
 
-主线 → 备线 → 免费兜底：
-
-- 追问+标签：Qwen-Plus → GLM-4-Air → GLM-4-Flash
-- 简介生成：DeepSeek-V3 → Qwen-Plus → GLM-4-Air
+```
+用户自由文本 / 语音
+    ↓
+规则引擎 — 关键词匹配，0 Token
+    ↓ 草稿标签 + 维度缺口
+DeepSeek-V3 — LLM 看全文，标签提取 + 追问生成
+    ↓ 用户确认标签
+DeepSeek-V3 — 基于原文+标签生成自然简介
+    ↓
+保存到数据库（SQLite）
+```
 
 ## 成本
 
 | 步骤 | 模型 | 单次成本（估算） |
 |------|------|:---:|
-| 追问+标签 | Qwen-Plus | ~¥0.0014 |
-| 简介生成 | DeepSeek-V3 | ~¥0.0026 |
+| 追问+标签 | DeepSeek-V3 | ~¥0.002 |
+| 简介生成 | DeepSeek-V3 | ~¥0.002 |
+| 语音识别 | 阿里云 Paraformer-v2 | 免费（36,000次额度） |
 | **合计** | | **~¥0.004** |
 
-## 项目文件
+## 项目结构
 
 ```
 backend/
 ├── app/
-│   ├── main.py          # FastAPI 入口
-│   ├── config.py        # 配置（环境变量）
-│   ├── api/profile.py   # API 端点
+│   ├── main.py              # FastAPI 入口
+│   ├── config.py            # 环境变量配置
+│   ├── api/profile.py       # REST API 端点
 │   ├── core/
-│   │   ├── taxonomy.py  # 标签体系加载
-│   │   ├── rule_engine.py # 规则引擎
+│   │   ├── taxonomy.py      # 标签体系 YAML 加载
+│   │   ├── rule_engine.py   # 规则引擎
 │   │   ├── prompt_engine.py # Prompt 模板渲染
 │   │   ├── orchestrator.py  # AI 编排 + 降级链
-│   │   └── schemas.py   # Pydantic 模型
+│   │   └── schemas.py       # Pydantic 模型
 │   ├── services/
-│   │   ├── llm_client.py # 多厂商 LLM 客户端
-│   │   └── db.py        # 数据库操作
-│   └── models/profile.py # 数据表模型
-├── data/tag-taxonomy.yaml # 标签体系配置
-├── prompts/              # Prompt 模板
+│   │   ├── llm_client.py    # DeepSeek/GLM 客户端
+│   │   ├── asr.py           # 阿里云语音识别
+│   │   └── db.py            # SQLite 操作
+│   └── models/profile.py    # 用户资料表
+├── data/tag-taxonomy.yaml   # 80+ 标签定义
+├── prompts/                 # Prompt 模板
 └── requirements.txt
 demo/
-└── wellcee-profile-ai-mvp.html  # 交互 Demo
+└── wellcee-profile-ai-mvp.html  # 交互 Demo（可独立运行）
 docs/superpowers/
 ├── specs/   # PRD + 技术方案
 └── plans/   # 实施计划
